@@ -1,5 +1,6 @@
 import pygame
 import sys
+from games.tictactoe import TicTacToe
 white = (255,255,255)
 black = (0,0,0)
 navy = (1,3,43)
@@ -45,6 +46,8 @@ tttcolor = pygame.Rect(SW/2 - 60, SH/2 -30 -25, 120, 50)
 othcolor = pygame.Rect(SW/2 - 60, SH/2 + 50 - 25, 120, 50)
 c4color = pygame.Rect(SW/2 - 60, SH/2 + 130 -25, 120, 50)
 
+game = None
+
 while True:
     for event in pygame.event.get():
         if event.type ==pygame.QUIT:
@@ -53,18 +56,30 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if quit_rect.collidepoint(event.pos):
-                    pygame.quit()
-                    sys.exit()
+                    if not game:
+                        pygame.quit()
+                        sys.exit()
+                    else:
+                        game = False
+                elif tttrect.collidepoint(event.pos):
+                    game = TicTacToe("me","ching","me",(10,10),screen)
+                if game:
+                    game.checkpress(event)
                 
     screen.fill(navy)
     x = int(quit_rect.height/2)
     pygame.draw.rect(screen, red, quit_rect, border_radius = x)
-    pygame.draw.rect(screen, orange, tttcolor, border_radius = int(tttcolor.height/2))
-    pygame.draw.rect(screen, orange, othcolor, border_radius = int(othcolor.height/2))
-    pygame.draw.rect(screen, orange, c4color, border_radius = int(c4color.height/2))
-    screen.blit(gamesurf, gamerect)
     screen.blit(textsurf, textrect)
-    screen.blit(tttsurf, tttrect)
-    screen.blit(othellosurf,othellorect)
-    screen.blit(connect4surf, connect4rect)
+
+    if not game:
+        pygame.draw.rect(screen, orange, tttcolor, border_radius = int(tttcolor.height/2))
+        pygame.draw.rect(screen, orange, othcolor, border_radius = int(othcolor.height/2))
+        pygame.draw.rect(screen, orange, c4color, border_radius = int(c4color.height/2))
+        screen.blit(gamesurf, gamerect)
+        screen.blit(tttsurf, tttrect)
+        screen.blit(othellosurf,othellorect)
+        screen.blit(connect4surf, connect4rect)
+    else:
+        game.renderboard("fah")
+        pass
     pygame.display.flip()

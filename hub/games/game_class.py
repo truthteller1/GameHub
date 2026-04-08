@@ -5,16 +5,18 @@ class Game:
         self.p1 = p1
         self.p2 = p2
         self.turn = starter
-        self.gameboard = np.zeros(board)
+        self.gameboard = np.zeros(board, dtype=int)
 
     def switch_turn(self):
         self.turn = self.p1 if (self.turn == self.p2) else self.p2
+        print("turn changed to",self.turn)
 
     def make_move(self, move):
         if (self.turn == self.p1):
             self.gameboard[move] = 1
         else:
             self.gameboard[move]  = 2
+        print(self.gameboard)
         
     def check_win_condition(self):
         pass
