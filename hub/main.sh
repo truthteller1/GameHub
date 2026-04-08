@@ -102,6 +102,9 @@ validPwd() {
 }
 
 Login() {
+	if [[ ! $2 == "" ]]; then
+		echo -e "\033[0;31mUser $2 is already in the hub. Please try again\033[0m" >&2
+	fi
 	read -rp "Is this your first time in the Hub Player $1?[y/n]: " reply
 	while [[ ! $reply =~ ^[yYnN]$ ]]; do
 		read -rp $'\033[0;31mInput must be "y" or "n": \033[0m' reply
@@ -110,6 +113,10 @@ Login() {
 		echo $(setUsr)
 	else
 		read -rp "Identify yourself player $1: " usr
+		if [[ $1 == "2" && $usr == $player1 ]]; then
+			echo $usr
+			return
+		fi
 		while [[ $(grep -w "$usr" users.tsv) == "" ]]
 		do
 			read -rp $'\033[0;31mNo such player exists. Please try again: \033[0m' usr
@@ -123,5 +130,8 @@ Login() {
 echo "Welcome to The GameHub!"
 player1=$(Login 1)
 player2=$(Login 2)
+while [[ "$player1" == "$player2" ]]; do
+	player2=$(Login 2 $player1)
+done
 echo "Get ready ..."
 python3 ./game.py "$player1" "$player2"
