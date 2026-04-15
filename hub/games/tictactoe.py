@@ -38,7 +38,31 @@ class TicTacToe(Game):
             for j in range(self.gameboard.shape[1]):
                 if (self.boardrects[i][j]).collidepoint(click.pos) and self.gameboard[i][j]==0:
                     self.make_move((i,j))
-                    self.check_win_condition()
+                    if self.check_win_condition((i,j)) != 0:
+                        return True
                     self.switch_turn()
-    def check_win_condition(self):
-        return 
+
+    def check_win_condition(self, move):
+        vert = self.gameboard[:,move[1]]
+        hor = self.gameboard[move[0],:]
+        rdiag = self.gameboard.diagonal(move[1] - move[0])
+        ldiag = self.gameboard[:,::-1].diagonal(self.gameboard.shape[0] - 1 - move[0] - move[1])
+
+        win1_vert= ((vert[:-4] == vert[1:-3]) * (vert[:-4] == vert[2:-2]) * (vert[:-4] == vert[3:-1]) * (vert[:-4] == vert[4:]) * (vert[:-4] == 1)).any()
+        win1_hor= ((hor[:-4] == hor[1:-3]) * (hor[:-4] == hor[2:-2]) * (hor[:-4] == hor[3:-1]) * (hor[:-4] == hor[4:]) * (hor[:-4] == 1)).any() 
+        win1_rdiag= ((rdiag[:-4] == rdiag[1:-3]) * (rdiag[:-4] == rdiag[2:-2]) * (rdiag[:-4] == rdiag[3:-1]) * (rdiag[:-4] == rdiag[4:]) * (rdiag[:-4] == 1)).any()
+        win1_ldiag= ((ldiag[:-4] == ldiag[1:-3]) * (ldiag[:-4] == ldiag[2:-2]) * (ldiag[:-4] == ldiag[3:-1]) * (ldiag[:-4] == ldiag[4:]) * (ldiag[:-4] == 1)).any()
+
+        win2_vert= ((vert[:-4] == vert[1:-3]) * (vert[:-4] == vert[2:-2]) * (vert[:-4] == vert[3:-1]) * (vert[:-4] == vert[4:]) * (vert[:-4] == 2)).any()   
+        win2_hor= ((hor[:-4] == hor[1:-3]) * (hor[:-4] == hor[2:-2]) * (hor[:-4] == hor[3:-1]) * (hor[:-4] == hor[4:]) * (hor[:-4] == 2)).any()
+        win2_rdiag= ((rdiag[:-4] == rdiag[1:-3]) * (rdiag[:-4] == rdiag[2:-2]) * (rdiag[:-4] == rdiag[3:-1]) * (rdiag[:-4] == rdiag[4:]) * (rdiag[:-4] == 2)).any()
+        win2_ldiag= ((ldiag[:-4] == ldiag[1:-3]) * (ldiag[:-4] == ldiag[2:-2]) * (ldiag[:-4] == ldiag[3:-1]) * (ldiag[:-4] == ldiag[4:]) * (ldiag[:-4] == 2)).any()
+
+        if win1_vert or win1_hor or win1_rdiag or win1_ldiag:
+            return 1
+        elif win2_vert or win2_hor or win2_rdiag or win2_ldiag:
+            return 2
+        elif not (self.gameboard == 0).any():
+            return -1
+        else:
+            return 0
