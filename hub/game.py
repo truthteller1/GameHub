@@ -1,6 +1,7 @@
 import pygame
 import sys
 from games.tictactoe import TicTacToe
+from games.connect4 import Connect4
 white = (255,255,255)
 black = (0,0,0)
 navy = (1,3,43)
@@ -63,8 +64,11 @@ while True:
                         game = False
                 elif tttrect.collidepoint(event.pos):
                     game = TicTacToe("me","ching","me",(10,10),screen)
+                elif connect4rect.collidepoint(event.pos):
+                    game = Connect4("me","ching","me",(7,7),screen)
                 if game:
-                    game.checkpress(event)
+                    if game.checkpress(event):
+                        game = False
                 
     screen.fill(navy)
     x = int(quit_rect.height/2)
