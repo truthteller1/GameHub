@@ -31,6 +31,7 @@ class Othello(Game):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 #self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
+
                 pygame.draw.rect(self.screen, (0,255,0), self.boardrects[i][j])
                 if self.gameboard[i][j] == 1:
                     #REPLACE THIS WITH X
@@ -102,6 +103,7 @@ class Othello(Game):
     def checkpress(self,click):
         for i in range(self.gameboard.shape[0]):
             for j in range(self.gameboard.shape[1]):
+
                 if (self.boardrects[i][j]).collidepoint(click.pos) and self.gameboard[i][j]==0 and self.valid_move(i,j,self.rep[self.turn]):
                     self.make_move((i,j))
                     if self.check_win_condition((i,j)) != 0:
