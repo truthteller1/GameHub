@@ -2,6 +2,9 @@ import pygame
 import sys
 from games.tictactoe import TicTacToe
 from games.connect4 import Connect4
+from games.othello import Othello
+from games.chain_rxn import Chain_rxn
+
 white = (255,255,255)
 black = (0,0,0)
 navy = (1,3,43)
@@ -43,9 +46,14 @@ connect4surf = font.render("Connect4",True,white)
 connect4rect = connect4surf.get_rect()
 connect4rect.center = (SW/2, SH/2 + 130)
 
+chainrxnsurf = font.render("Chain Reaction",True,white)
+chainrxnrect = chainrxnsurf.get_rect()
+chainrxnrect.center = (SW/2, SH/2 + 210)
+
 tttcolor = pygame.Rect(SW/2 - 60, SH/2 -30 -25, 120, 50)
 othcolor = pygame.Rect(SW/2 - 60, SH/2 + 50 - 25, 120, 50)
 c4color = pygame.Rect(SW/2 - 60, SH/2 + 130 -25, 120, 50)
+crxncolor = pygame.Rect(SW/2 - 60, SH/2 + 210 - 25, 120, 50)
 
 game = None
 
@@ -66,6 +74,10 @@ while True:
                     game = TicTacToe("me","ching","me",(10,10),screen)
                 elif connect4rect.collidepoint(event.pos):
                     game = Connect4("me","ching","me",(7,7),screen)
+                elif othellorect.collidepoint(event.pos):
+                    game = Othello("me","Ching","me",(8,8),screen)
+                elif chainrxnrect.collidepoint(event.pos):
+                    game = Chain_rxn("me","Ching","me",(6,6,2),screen)
                 if game:
                     if game.checkpress(event):
                         game = False
@@ -79,10 +91,12 @@ while True:
         pygame.draw.rect(screen, orange, tttcolor, border_radius = int(tttcolor.height/2))
         pygame.draw.rect(screen, orange, othcolor, border_radius = int(othcolor.height/2))
         pygame.draw.rect(screen, orange, c4color, border_radius = int(c4color.height/2))
+        pygame.draw.rect(screen, orange, crxncolor, border_radius = int(crxncolor.height/2))
         screen.blit(gamesurf, gamerect)
         screen.blit(tttsurf, tttrect)
         screen.blit(othellosurf,othellorect)
         screen.blit(connect4surf, connect4rect)
+        screen.blit(chainrxnsurf, chainrxnrect)
     else:
         game.renderboard("fah")
         pass
