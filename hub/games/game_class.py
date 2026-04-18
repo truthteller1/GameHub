@@ -4,6 +4,7 @@ class Game:
     def __init__(self, p1, p2, starter, board):
         self.p1 = p1
         self.p2 = p2
+        self.rep = {p1:1, p2:2}
         self.turn = starter
         self.gameboard = np.zeros(board, dtype=int)
 
