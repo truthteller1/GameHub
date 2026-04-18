@@ -2,6 +2,7 @@ import pygame
 import sys
 from games.tictactoe import TicTacToe
 from games.othello import Othello
+from games.checkers import Checkers
 import csv
 
 white = (255,255,255)
@@ -83,9 +84,15 @@ connect4surf = font.render("Connect4",True,white)
 connect4rect = connect4surf.get_rect()
 connect4rect.center = (SW/2, SH/2 + 130)
 
+checksurf = font.render("Checkers",True,white)
+checkrect = othellosurf.get_rect()
+checkrect.center = (SW/2, SH/2 + 210)
+
 tttcolor = pygame.Rect(SW/2 - 60, SH/2 -30 -25, 120, 50)
 othcolor = pygame.Rect(SW/2 - 60, SH/2 + 50 - 25, 120, 50)
 c4color = pygame.Rect(SW/2 - 60, SH/2 + 130 -25, 120, 50)
+checkcolor = pygame.Rect(SW/2 - 60, SH/2 + 210 -25, 120, 50)
+
 buttons = [
     #Button(True,(SW/2, SH/2 - 30),)
 ]
@@ -108,12 +115,16 @@ while True:
                         sys.exit()
                     else:
                         game = False
-                elif tttcolor.collidepoint(event.pos):
-                    game = TicTacToe("me","ching","me",(10,10),screen)
-                elif othcolor.collidepoint(event.pos):
-                    game = Othello("me","ching","me",(8,8),screen)
+                if not game:
+                    if tttcolor.collidepoint(event.pos):
+                        game = TicTacToe("me","ching","me",(10,10),screen)
+                    elif othcolor.collidepoint(event.pos):
+                        game = Othello("me","ching","me",(8,8),screen)
+                    elif checkcolor.collidepoint(event.pos):
+                        game = Checkers("me","ching","me",(8,8),screen)
                 if game:
-                    game.checkpress(event)
+                    if game.checkpress(event):
+                        game = False
                 
     screen.fill(navy)
     x = int(quit_rect.height/2)
@@ -124,10 +135,12 @@ while True:
         pygame.draw.rect(screen, orange, tttcolor, border_radius = int(tttcolor.height/2))
         pygame.draw.rect(screen, orange, othcolor, border_radius = int(othcolor.height/2))
         pygame.draw.rect(screen, orange, c4color, border_radius = int(c4color.height/2))
+        pygame.draw.rect(screen, orange, checkcolor, border_radius = int(c4color.height/2))
         screen.blit(gamesurf, gamerect)
         screen.blit(tttsurf, tttrect)
         screen.blit(othellosurf,othellorect)
         screen.blit(connect4surf, connect4rect)
+        screen.blit(checksurf, checkrect)
         for b in buttons:
             b.render()
     else:
