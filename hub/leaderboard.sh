@@ -1,3 +1,4 @@
+#!/bin/bash
 echo -e "\033[0;32m\t\t\t\tLEADERBOARD\033[0m"
 
 games=("tictactoe" "connect4" "othello")
