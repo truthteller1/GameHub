@@ -44,7 +44,7 @@ class Connect4(Game):
     def checkpress(self,click):
         for i in range(self.gameboard.shape[0]):
             for j in range(self.gameboard.shape[1]):
-                if (self.boardrects[i][j]).collidepoint(click.pos):
+                if (self.boardrects[i][j]).collidepoint(click.pos) and np.argwhere(self.gameboard[:,j] == 0).size != 0:
                     self.make_move((i,j))
                     if self.check_win_condition((i,j)) != 0:
                         return True
