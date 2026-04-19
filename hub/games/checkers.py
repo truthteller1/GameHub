@@ -48,6 +48,8 @@ class Checkers(Game):
                         pygame.draw.circle(self.screen,(0,0,100),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-5)
                     else:
                         pygame.draw.circle(self.screen,(0,0,255),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-5)
+                if self.gameboard[i][j]<0:
+                    pygame.draw.circle(self.screen, (255,165,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),5)
     def check_existence(self,i,j): #move is position of coin
         move = (i,j)
         if (move[1]+move[0])%2==0:
@@ -81,6 +83,7 @@ class Checkers(Game):
                 return False
 
     def jump(self, pos):
+        self.selected = None
         rdiag = self.gameboard.diagonal(pos[1]-pos[0])
         rind = min(pos[0],pos[1])
         ldiag = self.gameboard[:,::-1].diagonal(self.gameboard.shape[1]-1-pos[1]-pos[0])
