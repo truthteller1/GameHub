@@ -27,11 +27,11 @@ class Othello(Game):
         by = 20
         buffer  = 10
         side = 30
+        moves = self.possible_moves()
         for i in range(self.gameboard.shape[0]):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 #self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
-
                 pygame.draw.rect(self.screen, (0,255,0), self.boardrects[i][j])
                 if self.gameboard[i][j] == 1:
                     #REPLACE THIS WITH X
@@ -39,6 +39,10 @@ class Othello(Game):
                 elif self.gameboard[i][j] == 2:
                     #REPLACE WITH O
                     pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2)
+                
+        for k in moves:
+            i,j=k
+            pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2,width = 2)
 
     def check_list(self,arr, pos, player):
         if np.argwhere(arr[:pos] == player).size != 0:
@@ -99,6 +103,9 @@ class Othello(Game):
                 count += 1
         self.gameboard[move[0],move[1]] = self.rep[self.turn]
 
+    def possible_moves(self):
+        
+        return np.argwhere(self.gameboard==0)[self.has_moves(np.argwhere(self.gameboard==0)[:,0],np.argwhere(self.gameboard==0)[:,1],self.rep[self.turn])]
 
     def checkpress(self,click):
         for i in range(self.gameboard.shape[0]):
