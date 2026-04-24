@@ -14,7 +14,7 @@ setPwd() {
 		echo >&2
 		
 		if [[ "$pswd" == "$cpwd" ]]; then
-			echo -e "$1\t$pswd" >> users.tsv
+			echo -e "$1\t$pswd\t0\t0\t0\t0" >> users.tsv
 			echo -e "\033[0;32mPlayer $1 has been registered to the hub.\033[0m" >&2
 			break
 		else

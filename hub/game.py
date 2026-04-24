@@ -7,12 +7,17 @@ from games.othello import Othello
 from games.chain_rxn import Chain_rxn
 from games.checkers import Checkers
 import csv
+import random
+import os
 
 white = (255,255,255)
 black = (0,0,0)
 navy = (1,3,43)
 red = (255, 0,0)
 orange = (255,165,0)
+
+player1 = sys.argv[1]
+player2 = sys.argv[2]
 
 pygame.init()
 clock=pygame.time.Clock()
@@ -23,6 +28,28 @@ SH = 800
 screen = pygame.display.set_mode((SW,SH))
 
 screen.fill(white)
+
+avatar_data = []
+with open("users.tsv","r") as file:
+    for line in file:
+        line = line.strip()
+        arr = line.split("\t")
+        if arr[0] == player1 or arr[0] == player2:
+            avatar_data.append([arr[0],int(arr[2]),int(arr[3]),int(arr[4]),int(arr[5])])
+
+title = pygame.image.load("../Graphics/Title.png").convert_alpha()
+title = pygame.transform.scale(title,(900,250))
+loc = []
+for i in range(15):
+    loc.append(pygame.image.load(f"../Graphics/LOC/LOC{i + 1}.png"))
+    loc[-1] = pygame.transform.scale(loc[-1],(15,10 * i + 250))
+
+frame = 0
+par = []
+for pos in range(SW // 20):
+    par.append([random.choice(loc),100 * random.randint(0,10) , random.randint(4,10), pos])
+    par[-1][0].set_alpha(random.randint(200,255))
+
 
 class Text:
     def __init__(self,text,size,pos,font="calibri",color=white):
@@ -208,8 +235,13 @@ gamebuttons= [
     #settings
 ]
 
-menu=False
+player = []
+player.append(Text(player1,45,(SW /2, SH / 2 - 180),None,(8,200,4)))
+player.append(Text(player2,45,(SW /2, SH / 2 - 180),None,(8,200,4)))
+
+menu, avatar, sound=False, False, False
 game = None
+avatar_iter = 0
 
 opacity = pygame.Surface((SW,SH))
 opacity.fill((84,84,84))
@@ -263,19 +295,19 @@ while True:
                 
                 elif not game and menu and menu.settings == False:
                     if menu.buttons[0].rect.collidepoint(event.pos):
-                        game = TicTacToe("me","ching","me",(10,10),screen)
+                        game = TicTacToe(player1,player2,player1,(10,10),screen)
                         menu=False
                     elif menu.buttons[1].rect.collidepoint(event.pos):
-                        game = Othello("me","ching","me",(8,8),screen)
+                        game = Othello(player1,player2,player1,(8,8),screen)
                         menu=False
                     elif menu.buttons[4].rect.collidepoint(event.pos):
-                        game = Checkers("me","ching","me",(8,8),screen)
+                        game = Checkers(player1,player2,player1,(8,8),screen)
                         menu=False
                     elif menu.buttons[3].rect.collidepoint(event.pos):
-                        game = Chain_rxn("me","Ching","me",(6,6,2),screen)
+                        game = Chain_rxn(player1,player2,player1,(6,6,2),screen)
                         menu=False
                     elif menu.buttons[2].rect.collidepoint(event.pos):
-                        game = Connect4("me","ching","me",(7,7),screen)
+                        game = Connect4(player1,player2,player1,(7,7),screen)
                         menu=False
                     elif menu.buttons[5].rect.collidepoint(event.pos):
                         menu = False
@@ -284,10 +316,44 @@ while True:
                         buttons[-1].active = True
                 
                 elif not game and menu and menu.settings == True:
-                    if menu.buttons[0].rect.collidepoint(event.pos):
+                    if avatar:
+                        if avatar_buttons[0].rect.collidepoint(event.pos):
+                            avatar_iter = (avatar_iter - 1) % 2
+                        elif avatar_buttons[1].rect.collidepoint(event.pos):
+                            avatar_iter = (avatar_iter + 1) % 2
+                        elif avatar_buttons[2].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][1] = (avatar_data[avatar_iter][1] - 1) % 5
+                        elif avatar_buttons[3].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][1] = (avatar_data[avatar_iter][1] + 1) % 5
+                        elif avatar_buttons[4].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][2] = (avatar_data[avatar_iter][2] - 1) % 5
+                        elif avatar_buttons[5].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][2] = (avatar_data[avatar_iter][2] + 1) % 5
+                        elif avatar_buttons[6].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][3] = (avatar_data[avatar_iter][3] - 1) % 5
+                        elif avatar_buttons[7].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][3] = (avatar_data[avatar_iter][3] + 1) % 5
+                        elif avatar_buttons[8].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][4] = (avatar_data[avatar_iter][4] - 1) % 5
+                        elif avatar_buttons[9].rect.collidepoint(event.pos):
+                            avatar_data[avatar_iter][4] = (avatar_data[avatar_iter][4] + 1) % 5
+                        elif avatar_quit.rect.collidepoint(event.pos):
+                            os.system(f"sed -i 's/{avatar_data[0][0]}\\t\\(.*\\)\\t.\\t.\\t.\\t./{avatar_data[0][0]}\\t\\1\\t{avatar_data[0][1]}\\t{avatar_data[0][2]}\\t{avatar_data[0][3]}\\t{avatar_data[0][4]}/' users.tsv")
+                            os.system(f"sed -i 's/{avatar_data[1][0]}\\t\\(.*\\)\\t.\\t.\\t.\\t./{avatar_data[1][0]}\\t\\1\\t{avatar_data[1][1]}\\t{avatar_data[1][2]}\\t{avatar_data[1][3]}\\t{avatar_data[1][4]}/' users.tsv")
+                            avatar = False
+                    elif menu.buttons[0].rect.collidepoint(event.pos):
                         pass#sound
                     elif menu.buttons[1].rect.collidepoint(event.pos):
-                        pass#avatar
+                        avatar = True
+                        avatar_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
+                        avatar_quit.assigntext("DONE",30,None,red)
+                        avatar_buttons = []
+                        for i in range(10):
+                            avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
+                            if i % 2 == 0:
+                                avatar_buttons[-1].assigntext("<",30,None)
+                            else:
+                                avatar_buttons[-1].assigntext(">",30,None)
                     elif menu.buttons[2].rect.collidepoint(event.pos):
                         pass#analytics
                     elif menu.buttons[3].rect.collidepoint(event.pos):
@@ -296,10 +362,17 @@ while True:
                             b.active = True
                         buttons[-1].active = True
 
-    screen.fill(navy)
+
+    screen.fill((0,0,0))
+    for i in range(SW // 20):
+        screen.blit(par[i][0],(20 * par[i][3] , SH - (frame * par[i][2] + par[i][1]) % (2 * SH)))
+        screen.blit(par[(i + 3) % (SW // 20)][0],(20 * par[i][3] , SH - (frame * par[i][2] + SH / 2 + par[i][1]) % (2 * SH)))
+        screen.blit(par[(i + 7) % (SW // 20)][0],(20 * par[i][3] , SH - (frame * par[i][2] + SH  + par[i][1]) % (2 * SH)))
+        screen.blit(par[(i + 8) % (SW // 20)][0],(20 * par[i][3] , SH - (frame * par[i][2] + 3 * SH / 2 + par[i][1]) % (2 * SH)))
+    frame = (frame - 1) % (2 * SH)
 
     if not game:
-        screen.blit(gamesurf, gamerect)
+        screen.blit(title,(SW/2 - 450, 150))
         for b in buttons:
             b.render()
         menubar.render()
@@ -312,7 +385,17 @@ while True:
     if menu:
         screen.blit(opacity,(0,0))
         #include settings rendering func here
-        menu.render()
+        if avatar == True:
+            avatar_rect = pygame.Rect(0,0,550,600)
+            avatar_rect.center = (SW / 2, SH / 2 + 50)
+            pygame.draw.rect(screen,(59,59,59),avatar_rect,0,20)
+            avatar_quit.render()
+            for b in avatar_buttons:
+                b.render()
+            player[avatar_iter].render()
+            print(avatar_data[avatar_iter])
+        else:
+            menu.render()
         
 
     clock.tick(60)
