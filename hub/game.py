@@ -62,7 +62,7 @@ for i in range(5):
 hats = []
 for i in range(5):
     hats.append(pygame.image.load(f"../Graphics/Hats/Hat{i+1}.png").convert_alpha())
-    hats[-1] = pygame.transform.scale(hats[-1],(200,80))
+    hats[-1] = pygame.transform.scale(hats[-1],(260,135))
 
 frame = 0
 par = []
@@ -256,12 +256,19 @@ gamebuttons= [
 ]
 
 player = []
-player.append(Text(player1,45,(SW /2, SH / 2 - 180),None,(8,200,4)))
-player.append(Text(player2,45,(SW /2, SH / 2 - 180),None,(8,200,4)))
+player.append(Text(avatar_data[0][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
+player.append(Text(avatar_data[1][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
 
-menu, avatar, sound=False, False, False
-game = None
+analytics_par = []
+analytics_par.append(Text("Wins",45,(SW/2,SH/2-80),None,(8,200,4)))
+analytics_par.append(Text("Losses",45,(SW/2,SH/2-80),None,(8,200,4)))
+analytics_par.append(Text("Win/Loss Ratio",45,(SW/2,SH/2-80),None,(8,200,4)))
+analytics_par.append(Text("Total games",45,(SW/2,SH/2-80),None,(8,200,4)))
+
+menu, avatar, sound, analytics=False, False, False, False
+game, winframe = None, None
 avatar_iter = 0
+analytics_iter = 0
 
 opacity = pygame.Surface((SW,SH))
 opacity.fill((84,84,84))
@@ -309,9 +316,8 @@ while True:
                         buttons[-1].active = False
                     
                 elif game and not menu:
-                    if game.checkpress(event):
-                        game = False
-                        time.sleep(2)
+                    if winframe is None and game.checkpress(event):
+                        game.winner = game.turn
                 
                 elif not game and menu and menu.settings == False:
                     if menu.buttons[0].rect.collidepoint(event.pos):
@@ -336,7 +342,17 @@ while True:
                         buttons[-1].active = True
                 
                 elif not game and menu and menu.settings == True:
-                    if avatar:
+                    if analytics:
+                        if analytics_buttons[0].rect.collidepoint(event.pos):
+                            analytics_iter = (analytics_iter - 1) % 4
+                        elif analytics_buttons[1].rect.collidepoint(event.pos):
+                            analytics_iter = (analytics_iter + 1) % 4
+                        elif analytics_show.rect.collidepoint(event.pos):
+                            os.system(f"bash leaderboard.sh {analytics_iter + 1}")
+                        elif analytics_quit.rect.collidepoint(event.pos):
+                            analytics = False
+
+                    elif avatar:
                         if avatar_buttons[0].rect.collidepoint(event.pos):
                             avatar_iter = (avatar_iter - 1) % 2
                         elif avatar_buttons[1].rect.collidepoint(event.pos):
@@ -375,7 +391,18 @@ while True:
                             else:
                                 avatar_buttons[-1].assigntext(">",30,None)
                     elif menu.buttons[2].rect.collidepoint(event.pos):
-                        pass#analytics
+                        analytics = True
+                        analytics_quit = Button((SW/2,SH/2+230),color=(8,69,4),border_width=0,size=(350,50))
+                        analytics_quit.assigntext("DONE",30,None,red)
+                        analytics_show = Button((SW/2,SH/2 + 150),color=(8,69,4),border_width=0,size=(350,50))
+                        analytics_show.assigntext("SHOW",30,None,red)
+                        analytics_buttons = []
+                        for i in range(2):
+                            analytics_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-80),color=(8,69,4),border_width=0,size=(40,90)))
+                            if i % 2 == 0:
+                                analytics_buttons[-1].assigntext("<",30,None)
+                            else:
+                                analytics_buttons[-1].assigntext(">",30,None)
                     elif menu.buttons[3].rect.collidepoint(event.pos):
                         menu = False
                         for b in menubar.buttons:
@@ -401,6 +428,12 @@ while True:
         game.renderboard("fah")
         for b in gamebuttons:
             b.render()
+        if game.winner:
+            if winframe is None:
+                winframe = frame
+            elif (winframe - frame) % (2 * SH) == 120:
+                game = False
+                winframe = None
 
     if menu:
         screen.blit(opacity,(0,0))
@@ -414,12 +447,22 @@ while True:
                 b.render()
             player[avatar_iter].render()
             screen.blit(skins[avatar_data[avatar_iter][4]],(SW / 2 - 150, SH / 2 - 90))
-            screen.blit(hats[avatar_data[avatar_iter][1]],(SW / 2 - 100, SH / 2 - 160))
+            screen.blit(hats[avatar_data[avatar_iter][1]],(SW / 2 - 130, SH / 2 - 175))
             screen.blit(eyes[avatar_data[avatar_iter][2]],(SW / 2 - 100, SH / 2 - 20))
             screen.blit(mouths[avatar_data[avatar_iter][3]],(SW / 2 - 75, SH / 2 + 60))
+        elif analytics == True:
+            analytics_rect = pygame.Rect(0,0,550,600)
+            analytics_rect.center = (SW/2,SH/2)
+            pygame.draw.rect(screen,(59,59,59),analytics_rect,0,20)
+            analytics_show.render()
+            analytics_quit.render()
+            for b in analytics_buttons:
+                b.render()
+            analytics_par[analytics_iter].render()
         else:
             menu.render()
         
 
     clock.tick(60)
     pygame.display.flip()
+        
