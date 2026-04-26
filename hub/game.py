@@ -6,6 +6,7 @@ from games.connect4 import Connect4
 from games.othello import Othello
 from games.chain_rxn import Chain_rxn
 from games.checkers import Checkers
+from games.avatar_render import *
 import csv
 import random
 import os
@@ -19,8 +20,11 @@ orange = (255,165,0)
 player1 = sys.argv[1]
 player2 = sys.argv[2]
 
+
 pygame.init()
+pygame.mixer.init()
 clock=pygame.time.Clock()
+# pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=2048)
 
 SW = 1000
 SH = 800
@@ -220,7 +224,20 @@ class SelectionBar:
         pygame.draw.rect(screen,(59,59,59),self.rect,0,20)
         for b in self.buttons:
             b.render()
-        
+
+class SoundTrack:
+    def __init__(self,filename,songname,):
+        self.name = songname
+        self.filename = filename
+        self.volume = 100
+        self.text = Text(songname,45,(SW /2, SH / 2 - 180),None,(8,200,4))
+    def load(self):
+        pygame.mixer.music.load(self.filename)
+        pygame.mixer.music.play(loops=-1)
+    def set_volume(self):
+        pygame.mixer.music.set_volume(self.volume/100)
+
+
 quit_rect = pygame.Rect(SW/2-40, SH-50 , 80, 40)
 
 font = pygame.font.SysFont(None, 30)
@@ -255,6 +272,8 @@ gamebuttons= [
     #settings
 ]
 
+soundtracks = [SoundTrack("elektronomia.ogg","Elektronomia"),SoundTrack("cyberpunk.ogg","Ireallywant")]
+
 player = []
 player.append(Text(avatar_data[0][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
 player.append(Text(avatar_data[1][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
@@ -267,9 +286,14 @@ analytics_par.append(Text("Total games",45,(SW/2,SH/2-80),None,(8,200,4)))
 
 menu, avatar, sound, analytics=False, False, False, False
 game, winframe = None, None
-avatar_iter = 0
 analytics_iter = 0
 
+av1 = parse_avatar(player1) 
+av2 = parse_avatar(player2)
+
+avatar_iter = sound_iter = 0
+songs = len(soundtracks)
+sound_select = False
 opacity = pygame.Surface((SW,SH))
 opacity.fill((84,84,84))
 opacity.set_alpha(171)
@@ -377,8 +401,41 @@ while True:
                             os.system(f"sed -i 's/{avatar_data[0][0]}\\t\\(.*\\)\\t.\\t.\\t.\\t./{avatar_data[0][0]}\\t\\1\\t{avatar_data[0][1]}\\t{avatar_data[0][2]}\\t{avatar_data[0][3]}\\t{avatar_data[0][4]}/' users.tsv")
                             os.system(f"sed -i 's/{avatar_data[1][0]}\\t\\(.*\\)\\t.\\t.\\t.\\t./{avatar_data[1][0]}\\t\\1\\t{avatar_data[1][1]}\\t{avatar_data[1][2]}\\t{avatar_data[1][3]}\\t{avatar_data[1][4]}/' users.tsv")
                             avatar = False
+                            av1 = parse_avatar(player1) 
+                            av2 = parse_avatar(player2)#REPLACE THIS SHIT
+                    
+                    elif sound:
+                        if sound_buttons[0].rect.collidepoint(event.pos):
+                            sound_iter = (sound_iter - 1) % songs
+                            soundtracks[sound_iter].load()
+                        elif sound_buttons[1].rect.collidepoint(event.pos):
+                            sound_iter = (sound_iter + 1) % songs
+                            soundtracks[sound_iter].load()
+                        elif sound_buttons[2].rect.collidepoint(event.pos):
+                            if soundtracks[sound_iter].volume>0:
+                                soundtracks[sound_iter].volume-=1
+                                soundtracks[sound_iter].set_volume()
+                        elif sound_buttons[3].rect.collidepoint(event.pos):
+                            if soundtracks[sound_iter].volume<100:
+                                soundtracks[sound_iter].volume+=1
+                                soundtracks[sound_iter].set_volume()
+                        elif sound_quit.rect.collidepoint(event.pos):
+                            sound = False
+
                     elif menu.buttons[0].rect.collidepoint(event.pos):
-                        pass#sound
+                        sound = True
+                        sound_select = True
+                        soundtracks[sound_iter].load()
+                        sound_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
+                        sound_quit.assigntext("DONE",30,None,red)
+                        sound_buttons = []
+                        for i in range(4):
+                            sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
+                            if i % 2 == 0:
+                                sound_buttons[-1].assigntext("<",30,None)
+                            else:
+                                sound_buttons[-1].assigntext(">",30,None)
+
                     elif menu.buttons[1].rect.collidepoint(event.pos):
                         avatar = True
                         avatar_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
@@ -390,6 +447,7 @@ while True:
                                 avatar_buttons[-1].assigntext("<",30,None)
                             else:
                                 avatar_buttons[-1].assigntext(">",30,None)
+
                     elif menu.buttons[2].rect.collidepoint(event.pos):
                         analytics = True
                         analytics_quit = Button((SW/2,SH/2+230),color=(8,69,4),border_width=0,size=(350,50))
@@ -423,6 +481,8 @@ while True:
         for b in buttons:
             b.render()
         menubar.render()
+        avatar_render(av1,(50,20),screen,scale = 0.16)
+        avatar_render(av2,(120,20),screen,scale = 0.16)
         
     else:
         game.renderboard("fah")
@@ -450,6 +510,7 @@ while True:
             screen.blit(hats[avatar_data[avatar_iter][1]],(SW / 2 - 130, SH / 2 - 175))
             screen.blit(eyes[avatar_data[avatar_iter][2]],(SW / 2 - 100, SH / 2 - 20))
             screen.blit(mouths[avatar_data[avatar_iter][3]],(SW / 2 - 75, SH / 2 + 60))
+
         elif analytics == True:
             analytics_rect = pygame.Rect(0,0,550,600)
             analytics_rect.center = (SW/2,SH/2)
@@ -459,10 +520,20 @@ while True:
             for b in analytics_buttons:
                 b.render()
             analytics_par[analytics_iter].render()
+
+        elif sound:
+            sound_rect = pygame.Rect(0,0,550,600)
+            sound_rect.center = (SW / 2, SH / 2 + 50)
+            pygame.draw.rect(screen,(59,59,59),sound_rect,0,20)
+            sound_quit.render()
+            for b in sound_buttons:
+                b.render()
+            soundtracks[sound_iter].text.render()
+            Text(str(soundtracks[sound_iter].volume),45,(SW / 2 - 100, SH / 2 - 160)).render()
+
         else:
             menu.render()
-        
-
+            
     clock.tick(60)
     pygame.display.flip()
         

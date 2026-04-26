@@ -1,4 +1,5 @@
 from .game_class import Game
+from .avatar_render import *
 import pygame
 
 class TicTacToe(Game):
@@ -7,31 +8,43 @@ class TicTacToe(Game):
         self.screen = screen
         self.boardrects = []
         #restructure vars
-        bx = 20
-        by = 20
-        buffer  = 10
-        side = 30
+        bx = 500-250
+        by = 150
+        buffer  = 6
+        side = 44
         for i in range(self.gameboard.shape[0]):
             self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
+        self.avatars = {self.p1:parse_avatar(p1),self.p2: parse_avatar(p2)}
+
+    def renderav(self, pos, player):
+        if self.turn != player:
+            transparency = 180
+        else:
+            transparency = 255
+        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)
 
     def renderboard(self, dimensions):
-        bx = 20
-        by = 20
-        buffer  = 10
-        side = 30
+        bx = 500-250
+        by = 150
+        buffer  = 6
+        side = 44
         for i in range(self.gameboard.shape[0]):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 #self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
-                pygame.draw.rect(self.screen, (0,255,0), self.boardrects[i][j])
+                pygame.draw.rect(self.screen, (0,150,0), self.boardrects[i][j])
                 if self.gameboard[i][j] == 1:
                     #REPLACE THIS WITH X
-                    pygame.draw.circle(self.screen,(255,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side/2),side//2)
+                    pygame.draw.circle(self.screen,(190,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side/2),side//2-2)
                 elif self.gameboard[i][j] == 2:
                     #REPLACE WITH O
-                    pygame.draw.circle(self.screen,(0,0,255),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2)
+                    pygame.draw.circle(self.screen,(0,0,190),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2)
+        self.renderav((125,300),self.p1)
+        pygame.draw.circle(self.screen,(190,0,0),(125,250),15)
+        self.renderav((1000-125,300),self.p2)
+        pygame.draw.circle(self.screen,(0,0,190),(1000-125,250),15)
     
     def checkpress(self,click):
         for i in range(self.gameboard.shape[0]):
