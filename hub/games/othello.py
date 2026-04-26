@@ -1,4 +1,5 @@
 from .game_class import Game
+from .avatar_render import *
 import pygame
 import numpy as np
 
@@ -9,40 +10,53 @@ class Othello(Game):
         self.screen = screen
         self.boardrects = []
         #restructure vars
-        bx = 20
-        by = 20
-        buffer  = 10
-        side = 30
+        bx = 500-240
+        by = 160
+        buffer  = 5
+        side = 55
         self.gameboard[3,3] = 1
         self.gameboard[4,4] = 1
         self.gameboard[3,4] = 2
         self.gameboard[4,3] = 2
+        self.avatars = {self.p1:parse_avatar(p1),self.p2: parse_avatar(p2)}
         for i in range(self.gameboard.shape[0]):
             self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
 
     def renderboard(self, dimensions):
-        bx = 20
-        by = 20
-        buffer  = 10
-        side = 30
+        bx = 500-240
+        by = 160
+        buffer  = 5
+        side = 55
         moves = self.possible_moves()
         for i in range(self.gameboard.shape[0]):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 #self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
-                pygame.draw.rect(self.screen, (0,255,0), self.boardrects[i][j])
+                pygame.draw.rect(self.screen, (0,150,0), self.boardrects[i][j])
                 if self.gameboard[i][j] == 1:
                     #REPLACE THIS WITH X
-                    pygame.draw.circle(self.screen,(255,255,255),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side/2),side//2)
+                    pygame.draw.circle(self.screen,(255,255,255),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side/2),side//2-2)
                 elif self.gameboard[i][j] == 2:
                     #REPLACE WITH O
-                    pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2)
+                    pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2)
                 
         for k in moves:
             i,j=k
-            pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2,width = 2)
+            pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2,width = 2)
+        
+        self.renderav((130,300),self.p1)
+        pygame.draw.circle(self.screen,(255,255,255),(130,250),20)
+        self.renderav((1000-130,300),self.p2)
+        pygame.draw.circle(self.screen,(0,0,0),(1000-130,250),20)
+
+    def renderav(self, pos, player):
+        if self.turn != player:
+            transparency = 180
+        else:
+            transparency = 255
+        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)
 
     def check_list(self,arr, pos, player):
         if np.argwhere(arr[:pos] == player).size != 0:

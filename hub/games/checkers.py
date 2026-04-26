@@ -1,4 +1,5 @@
 from .game_class import Game
+from .avatar_render import *
 import pygame
 import numpy as np
 class Checkers(Game):
@@ -16,20 +17,30 @@ class Checkers(Game):
                     self.gameboard[i][j] = 2
         
         #restructure vars
-        bx = 200
-        by = 200
+        bx = 500-240
+        by = 160
         buffer  = 0
-        side = 50
+        side = 60
         for i in range(self.gameboard.shape[0]):
             self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
 
+        self.avatars = {self.p1:parse_avatar(p1),self.p2: parse_avatar(p2)}
+
+    def renderav(self, pos, player):
+        if self.turn != player:
+            transparency = 180
+        else:
+            transparency = 255
+        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)
+        
+
     def renderboard(self, dimensions):
-        bx = 200
-        by = 200
+        bx = 500-240
+        by = 160
         buffer  = 0
-        side = 50
+        side = 60
         for i in range(self.gameboard.shape[0]):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
@@ -50,6 +61,11 @@ class Checkers(Game):
                         pygame.draw.circle(self.screen,(0,0,255),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-5)
                 if self.gameboard[i][j]<0:
                     pygame.draw.circle(self.screen, (255,165,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),5)
+        self.renderav((130,300),self.p1)
+        pygame.draw.circle(self.screen,(255,0,0),(130,250),15)
+        self.renderav((1000-130,300),self.p2)
+        pygame.draw.circle(self.screen,(0,0,255),(1000-130,250),15)
+
     def check_existence(self,i,j): #move is position of coin
         move = (i,j)
         if (move[1]+move[0])%2==0:
