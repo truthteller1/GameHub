@@ -44,6 +44,26 @@ for i in range(15):
     loc.append(pygame.image.load(f"../Graphics/LOC/LOC{i + 1}.png"))
     loc[-1] = pygame.transform.scale(loc[-1],(15,10 * i + 250))
 
+skins = []
+for i in range(5):
+    skins.append(pygame.image.load(f"../Graphics/Skins/Skin{i+1}.png").convert_alpha())
+    skins[-1] = pygame.transform.scale(skins[-1],(300,315))
+
+eyes = []
+for i in range(5):
+    eyes.append(pygame.image.load(f"../Graphics/Eyes/Eye{i+1}.png").convert_alpha())
+    eyes[-1]  = pygame.transform.scale(eyes[-1],(200,60))
+
+mouths = []
+for i in range(5):
+    mouths.append(pygame.image.load(f"../Graphics/Mouths/Mouth{i+1}.png").convert_alpha())
+    mouths[-1] = pygame.transform.scale(mouths[-1],(150,60))
+
+hats = []
+for i in range(5):
+    hats.append(pygame.image.load(f"../Graphics/Hats/Hat{i+1}.png").convert_alpha())
+    hats[-1] = pygame.transform.scale(hats[-1],(200,80))
+
 frame = 0
 par = []
 for pos in range(SW // 20):
@@ -393,7 +413,10 @@ while True:
             for b in avatar_buttons:
                 b.render()
             player[avatar_iter].render()
-            print(avatar_data[avatar_iter])
+            screen.blit(skins[avatar_data[avatar_iter][4]],(SW / 2 - 150, SH / 2 - 90))
+            screen.blit(hats[avatar_data[avatar_iter][1]],(SW / 2 - 100, SH / 2 - 160))
+            screen.blit(eyes[avatar_data[avatar_iter][2]],(SW / 2 - 100, SH / 2 - 20))
+            screen.blit(mouths[avatar_data[avatar_iter][3]],(SW / 2 - 75, SH / 2 + 60))
         else:
             menu.render()
         
