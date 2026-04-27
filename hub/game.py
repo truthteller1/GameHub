@@ -7,6 +7,9 @@ from games.othello import Othello
 from games.chain_rxn import Chain_rxn
 from games.checkers import Checkers
 from games.avatar_render import *
+from games.analytics import Analytics
+from games.button import Button
+from games.text import Text
 import csv
 import random
 import os
@@ -342,6 +345,12 @@ while True:
                 elif game and not menu:
                     if winframe is None and game.checkpress(event):
                         game.winner = game.turn
+                        with open("history.csv","a",newline="") as file:
+                            writer = csv.writer(file,quoting=csv.QUOTE_NONE,dialect="unix")
+                            game_name = str(type(game))
+                            game_name = game_name[game_name.find(".")+1:]
+                            game_name = game_name[:game_name.find(".")]
+                            writer.writerow([game_name,game.winner,game.p2])
                 
                 elif not game and menu and menu.settings == False:
                     if menu.buttons[0].rect.collidepoint(event.pos):
@@ -367,13 +376,7 @@ while True:
                 
                 elif not game and menu and menu.settings == True:
                     if analytics:
-                        if analytics_buttons[0].rect.collidepoint(event.pos):
-                            analytics_iter = (analytics_iter - 1) % 4
-                        elif analytics_buttons[1].rect.collidepoint(event.pos):
-                            analytics_iter = (analytics_iter + 1) % 4
-                        elif analytics_show.rect.collidepoint(event.pos):
-                            os.system(f"bash leaderboard.sh {analytics_iter + 1}")
-                        elif analytics_quit.rect.collidepoint(event.pos):
+                        if leaderboard.interact(event):
                             analytics = False
 
                     elif avatar:
@@ -450,17 +453,7 @@ while True:
 
                     elif menu.buttons[2].rect.collidepoint(event.pos):
                         analytics = True
-                        analytics_quit = Button((SW/2,SH/2+230),color=(8,69,4),border_width=0,size=(350,50))
-                        analytics_quit.assigntext("DONE",30,None,red)
-                        analytics_show = Button((SW/2,SH/2 + 150),color=(8,69,4),border_width=0,size=(350,50))
-                        analytics_show.assigntext("SHOW",30,None,red)
-                        analytics_buttons = []
-                        for i in range(2):
-                            analytics_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-80),color=(8,69,4),border_width=0,size=(40,90)))
-                            if i % 2 == 0:
-                                analytics_buttons[-1].assigntext("<",30,None)
-                            else:
-                                analytics_buttons[-1].assigntext(">",30,None)
+                        leaderboard = Analytics(SW,SH,screen)
                     elif menu.buttons[3].rect.collidepoint(event.pos):
                         menu = False
                         for b in menubar.buttons:
@@ -491,9 +484,21 @@ while True:
         if game.winner:
             if winframe is None:
                 winframe = frame
-            elif (winframe - frame) % (2 * SH) == 120:
-                game = False
-                winframe = None
+            elif (winframe - frame) % (2 * SH) >= 60:
+                if (winframe - frame) % (2 * SH) <= 360:
+                    screen.blit(opacity,(0,0))
+                    win_rect = pygame.Rect(0,0,550,600)
+                    win_rect.center = (SW/2,SH/2)
+                    pygame.draw.rect(screen,(59,59,59),win_rect,0,20)
+                    avatar_render(av1,(SW/2,SH/2-90),screen)
+                else:
+                    menu = SelectionBar(True)
+                    for b in menubar.buttons:
+                        b.active = False
+                    analytics = True
+                    leaderboard = Analytics(SW,SH,screen)
+                    game = False
+                    winframe = None
 
     if menu:
         screen.blit(opacity,(0,0))
@@ -515,11 +520,11 @@ while True:
             analytics_rect = pygame.Rect(0,0,550,600)
             analytics_rect.center = (SW/2,SH/2)
             pygame.draw.rect(screen,(59,59,59),analytics_rect,0,20)
-            analytics_show.render()
-            analytics_quit.render()
-            for b in analytics_buttons:
+            leaderboard.analytics_show.render()
+            leaderboard.analytics_quit.render()
+            for b in leaderboard.analytics_buttons:
                 b.render()
-            analytics_par[analytics_iter].render()
+            analytics_par[leaderboard.analytics_iter].render()
 
         elif sound:
             sound_rect = pygame.Rect(0,0,550,600)
@@ -533,7 +538,6 @@ while True:
 
         else:
             menu.render()
-            
+    
     clock.tick(60)
     pygame.display.flip()
-        
