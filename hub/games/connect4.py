@@ -48,18 +48,15 @@ class Connect4(Game):
         pygame.draw.circle(self.screen,(0,0,190),(1000-145,250),15)
 
     def make_move(self,move):
-        if self.turn == self.p1:
-            self.gameboard[np.argwhere(self.gameboard[:,move[1]] == 0)[-1],move[1]] = 1
-        else:
-            self.gameboard[np.argwhere(self.gameboard[:,move[1]] == 0)[-1],move[1]] = 2
-        print(self.gameboard)
+        self.gameboard[np.argwhere(self.gameboard[:,move[1]] == 0)[-1],move[1]] = self.rep[self.turn]
+        
 
     def checkpress(self,click):
         for i in range(self.gameboard.shape[0]):
             for j in range(self.gameboard.shape[1]):
                 if (self.boardrects[i][j]).collidepoint(click.pos) and np.argwhere(self.gameboard[:,j] == 0).size != 0:
                     self.make_move((i,j))
-                    if self.check_win_condition((i,j)) != 0:
+                    if self.check_win_condition((np.argwhere(self.gameboard[:,j] != 0)[0,0],j)) != 0:
                         return True
                     self.switch_turn()
 
@@ -86,4 +83,6 @@ class Connect4(Game):
         elif not (self.gameboard == 0).any():
             return -1
         else:
+            print(hor)
+            print(rdiag)
             return 0
