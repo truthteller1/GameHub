@@ -10,6 +10,7 @@ from games.avatar_render import *
 from utilities.analytics import Analytics
 from utilities.button import *
 from utilities.avatar_menu import *
+import matplotlib.pyplot as plt
 import csv
 import random
 import os
@@ -79,26 +80,27 @@ for pos in range(SW // 20):
     par.append([random.choice(loc),100 * random.randint(0,10) , random.randint(4,10), pos])
     par[-1][0].set_alpha(random.randint(200,255))
 
-
 class MenuBar:
-    def __init__(self,bg_color = (59,59,59), size = (800,160)):
+    def __init__(self,bg_color = (59,59,59), size = (844,204)):
         POS = self.pos = (SW/2,SH-100)
         self.size = size
         self.color = bg_color
         self.buttons=[
-                Button((POS[0]-size[0]//2+150, POS[1]),screen,color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
-                Button((SW/2, POS[1]),screen,color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
-                Button((POS[0]+size[0]//2-150, POS[1]),screen,color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10)
+                Button((POS[0]-size[0]//2+160, POS[1]),screen,img = "options_button.png",size=(220,140),border_radius=10),
+                Button((SW/2, POS[1]),screen,img="quitbutton.png",size=(220,140),border_radius=10),
+                Button((POS[0]+size[0]//2-160, POS[1]),screen,img="playbutton.png",size=(220,140),border_radius=10)
             ]
-        self.buttons[0].assigntext("OPTIONS",50,None,(0,255,0))
-        self.buttons[1].assigntext("QUIT",50,None,(255,0,0))
-        self.buttons[2].assigntext("PLAY",50,None,(0,0,255))
+        self.buttons[0].assigntext("OPTIONS",50,None,(87,236,115))
+        self.buttons[1].assigntext("QUIT",50,None,(241,95,95))
+        self.buttons[2].assigntext("PLAY",50,None,(61,149,236))
         self.rect = pygame.Rect(0,0,size[0],size[1])
         self.rect.center = POS
         self.active = True
+        self.img = pygame.image.load("menurect1.png").convert_alpha()
 
     def render(self):
-        pygame.draw.rect(screen,self.color,self.rect,0,20)
+        # pygame.draw.rect(screen,self.color,self.rect,0,20)
+        screen.blit(self.img,self.rect)
         for b in self.buttons:
             b.render()
 
@@ -108,26 +110,27 @@ class SelectionBar:
         POS=self.POS= (SW/2,SH/2)
         if settings:
             self.buttons=[
-                Button((SW/2, POS[1]-200+50),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+150),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+250),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+370),screen,color=(8, 69, 4),border_width=0,size=(300,50))
+                Button((SW/2, POS[1]-200+50),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+150),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+250),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+370),screen,img = "backbutton.png",size=(340,90))
             ]
             self.buttons[0].assigntext("SOUND",30,None)
             self.buttons[1].assigntext("AVATAR",30,None)
             self.buttons[2].assigntext("ANALYTICS",30,None)
             self.buttons[3].assigntext("BACK",30,None,red)
-            self.size = (550,400)
+            self.size = (550*968//800,450*968//800)
 
         else:
             self.buttons = [
                 #Button(True,(SW/2, SH/2 - 30),)
-                Button((SW/2, POS[1]-200+50),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+130),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+210),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+290),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+370),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+470),screen,color=(8, 69, 4),border_width=0,size=(300,50))
+                #Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+50),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+130),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+210),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+290),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+370),screen,img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+470),screen,img = "backbutton.png",size=(340,90))
             ]
             self.buttons[0].assigntext("TicTacToe",30,None)
             self.buttons[1].assigntext("Othello",30,None)
@@ -135,13 +138,15 @@ class SelectionBar:
             self.buttons[3].assigntext("Chain Reaction",30,None)
             self.buttons[4].assigntext("Checkers",30,None)
             self.buttons[5].assigntext("BACK",30,None,red)
-            self.size = (550,600)
+            self.size = (550*968//800,650*968//800)
         self.rect = pygame.Rect(0,0,self.size[0],self.size[1])
         self.rect.center = self.POS
+        self.img = pygame.image.load("roundrect.png").convert_alpha()
+        self.img = pygame.transform.smoothscale(self.img,(self.size))
     def render(self):
         #render self
         #dark grey rounded rect with neon green border, maybe glow?
-        pygame.draw.rect(screen,(59,59,59),self.rect,0,20)
+        screen.blit(self.img, self.rect)
         for b in self.buttons:
             b.render()
 
@@ -158,9 +163,8 @@ class SoundTrack:
         pygame.mixer.music.set_volume(self.volume/100)
 
 
-
 buttons = [
-    Button((SW-50,50),screen,img = "back.png",size = (30,30))
+    Button((SW-50,50),screen,img = "back.png",sqrscaling=True,size = (30,30))
 ]
 
 gamebuttons= [
@@ -168,7 +172,10 @@ gamebuttons= [
     #settings
 ]
 
-soundtracks = [SoundTrack("elektronomia.ogg","Elektronomia"),SoundTrack("cyberpunk.ogg","Ireallywant")]
+soundtracks = [SoundTrack("../Sound/elektronomia.ogg","Elektronomia"),
+               SoundTrack("el.ogg","Elektronomia1"),
+               SoundTrack("../Sound/cyberpunk.ogg","Ireallywant"),
+               SoundTrack("cp.ogg","Cyberpunk 2077")]
 
 player = []
 player.append([Text(avatar_data[0][0],45,(SW /2, SH / 2 - 180),screen,None,(8,200,4)),parse_avatar(avatar_data[0][0])])
@@ -194,6 +201,15 @@ opacity = pygame.Surface((SW,SH))
 opacity.fill((84,84,84))
 opacity.set_alpha(171)
 menubar = MenuBar()
+
+avatar_rect = pygame.Rect(0,0,550*968//800,600*968//800)
+avatar_rect.center = (SW / 2, SH / 2 + 50)
+avatar_img  = pygame.transform.smoothscale(pygame.image.load("roundrect.png"),avatar_rect.size)
+
+sound_rect = pygame.Rect(0,0,550*968//800,600*968//800)
+sound_rect.center = (SW / 2, SH / 2 + 50)
+sound_img = pygame.transform.smoothscale(pygame.image.load("roundrect.png"),sound_rect.size)
+
 
 while True:
     for event in pygame.event.get():
@@ -301,15 +317,17 @@ while True:
                         sound = True
                         sound_select = True
                         soundtracks[sound_iter].load()
-                        sound_quit = Button((SW/2,SH/2+280),screen,color=(8, 69, 4),border_width=0,size=(350,50))
+                        sound_quit = Button((SW/2,SH/2+280),screen,img = "backbutton.png",size=(340,90))
                         sound_quit.assigntext("DONE",30,None,red)
                         sound_buttons = []
                         for i in range(4):
-                            sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,color=(8, 69, 4),border_width=0,size=(40,90)))
+                            #sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
                             if i % 2 == 0:
-                                sound_buttons[-1].assigntext("<",30,None)
+                                #sound_buttons[-1].assigntext("<",30,None)
+                                sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img="leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
                             else:
-                                sound_buttons[-1].assigntext(">",30,None)
+                                #sound_buttons[-1].assigntext(">",30,None)
+                                sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img="rightbutton.png",border_width=0,size=(65,69),sqrscaling=True))
 
                     elif menu.buttons[1].rect.collidepoint(event.pos):
                         avatar = True
@@ -372,9 +390,7 @@ while True:
         screen.blit(opacity,(0,0))
         #include settings rendering func here
         if avatar == True:
-            avatar_rect = pygame.Rect(0,0,550,600)
-            avatar_rect.center = (SW / 2, SH / 2 + 50)
-            pygame.draw.rect(screen,(59,59,59),avatar_rect,0,20)
+            screen.blit(avatar_img,avatar_rect)
             AvatarMenu.avatar_quit.render()
             for b in AvatarMenu.avatar_buttons:
                 b.render()
@@ -395,15 +411,13 @@ while True:
             analytics_par[leaderboard.analytics_iter].render()
 
         elif sound:
-            sound_rect = pygame.Rect(0,0,550,600)
-            sound_rect.center = (SW / 2, SH / 2 + 50)
-            pygame.draw.rect(screen,(59,59,59),sound_rect,0,20)
+            #pygame.draw.rect(screen,(59,59,59),sound_rect,0,20)
+            screen.blit(sound_img,sound_rect)
             sound_quit.render()
             for b in sound_buttons:
                 b.render()
             soundtracks[sound_iter].text.render()
-            Text(str(soundtracks[sound_iter].volume),45,(SW / 2 - 100, SH / 2 - 160)).render()
-
+            Text(str(soundtracks[sound_iter].volume),45,(SW / 2, SH / 2 - 90),screen).render()
         else:
             menu.render()
     

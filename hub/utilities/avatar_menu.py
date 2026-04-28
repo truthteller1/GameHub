@@ -5,15 +5,14 @@ from .button import *
 class Avatar:
     def __init__(self,SW,SH,screen):
         self.avatar_iter = 0
-        self.avatar_quit = Button((SW/2,SH/2+280),screen,color=(8, 69, 4),border_width=0,size=(350,50))
+        self.avatar_quit = Button((SW/2,SH/2+280),screen,img = "backbutton.png",size=(340,90))
         self.avatar_quit.assigntext("DONE",30,None,(255,0,0))
         self.avatar_buttons = []
         for i in range(10):
-            self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,color=(8, 69, 4),border_width=0,size=(40,90)))
             if i % 2 == 0:
-                self.avatar_buttons[-1].assigntext("<",30,None)
+                self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img="leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
             else:
-                self.avatar_buttons[-1].assigntext(">",30,None)
+                self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img="rightbutton.png",border_width=0,size=(65,69),sqrscaling = True))
 
     def interact(self,event,avatar_data):
         if self.avatar_buttons[0].rect.collidepoint(event.pos):

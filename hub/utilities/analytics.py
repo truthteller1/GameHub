@@ -22,6 +22,28 @@ class Analytics:
             else:
                 self.analytics_buttons[-1].assigntext(">",30,None)
 
+        '''
+                        with open("history.csv","r",newline='') as file:
+                            game_stats = {"tictactoe":0,"othello":0,"connect4":0,"chain_rxn":0,"checkers":0}
+                            player_wins = {}
+                            csvreader = csv.reader(file)
+                            for row in csvreader:
+                                game_stats[row[1]]+=1
+                                if row[0] == "win":
+                                    if row[2] in player_wins.keys():
+                                        player_wins[row[2]] +=1
+                                    else:
+                                        player_wins[row[2]] = 1
+                                    if not(row[3] in player_wins.keys()):
+                                        player_wins[row[3]] = 0
+                            plt.subplot(121)
+                            plt.bar(list(player_wins.values()),list(player_wins.keys()))
+                            plt.title("Wins")
+                            plt.subplot(122)
+                            plt.pie(list(game_stats.values()),labels = list(game_stats.keys()))
+                            plt.title("gamesplayed")
+                            plt.show()'''
+
     def interact(self,event):
         if self.analytics_buttons[0].rect.collidepoint(event.pos):
             self.analytics_iter = (self.analytics_iter - 1) % 5

@@ -16,8 +16,8 @@ class Text:
         else:
             self.screen.blit(self.text_surf,self.rect)
 
-class Button:                                                                                                            
-    def __init__(self,location,screen,color=(100,100,0),border_color=(255,255,255),img=None,size = (160,50),border_radius = None,border_width=5):#text=None,fontsize=None,font="calibri",text_color=white
+class Button:
+    def __init__(self,location,screen,color=(0,0,0),img=None,size = (160,50),sqrscaling = False,border_radius = None,border_width=5):#text=None,fontsize=None,font="calibri",text_color=white
         # if type:
         #     self.type = "text"
         #     #self.text_surf = create_textsurf(text,fontsize,font,text_color,bg_color)
@@ -36,6 +36,7 @@ class Button:
         self.scale=1
         self.border_width = border_width
         self.active = True
+        self.sqrscaling = sqrscaling
         if img:
             self.img = pygame.transform.smoothscale(pygame.image.load(img).convert_alpha(),size)
             self.og_img = self.img
@@ -43,7 +44,6 @@ class Button:
         else:
             self.img = None
             self.color = color
-            self.border_color = border_color
             self.rect = pygame.Rect(location[0]-size[0]/2,location[1]-size[1]/2,size[0],size[1])
             if not border_radius:
                 self.border_radius = size[1]//2
@@ -54,12 +54,17 @@ class Button:
 
     def render(self):
         self.hover = self.rect.collidepoint(pygame.mouse.get_pos()) and not(pygame.mouse.get_pressed()[0])
+
         if self.active:
             if self.hover and not(self.uh):
-                self.size = (self.osize[0]*1.2,self.osize[1]*1.05)
+                if not self.sqrscaling:
+                    self.size = (self.osize[0]*1.2,self.osize[1]*1.05)
+                else:
+                    self.size = (self.osize[0]*1.1,self.osize[1]*1.1)
                 self.nrect = pygame.Rect(self.location[0]-self.size[0]/2,self.location[1]-self.size[1]/2,self.size[0],self.size[1])
                 if self.img:
-                    self.img = pygame.transform.smoothscale_by(self.og_img,1.2)
+                    self.img = pygame.transform.smoothscale(self.og_img,(self.size))
+
                 self.scale=1.05
 
             if self.uh and not(self.hover):
@@ -70,6 +75,7 @@ class Button:
                 self.scale=1
         else:
             self.nrect = self.rect
+            self.img = self.og_img
         if self.img:
             self.screen.blit(self.img,self.nrect)
         else:
@@ -83,4 +89,3 @@ class Button:
     def assigntext(self,text,fontsize,font="calibri",text_color=(255,255,255)):
         self.assigned = True
         self.text = Text(text,fontsize,self.location,self.screen,font,text_color)
-
