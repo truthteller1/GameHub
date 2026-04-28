@@ -7,6 +7,7 @@ from games.othello import Othello
 from games.chain_rxn import Chain_rxn
 from games.checkers import Checkers
 from games.avatar_render import *
+import matplotlib.pyplot as plt
 import csv
 import random
 import os
@@ -90,7 +91,7 @@ class Text:
             screen.blit(self.text_surf,self.rect)
 
 class Button:
-    def __init__(self,location,color=orange,border_color=white,img=None,size = (160,50),border_radius = None,border_width=5):#text=None,fontsize=None,font="calibri",text_color=white
+    def __init__(self,location,color=orange,border_color=white,img=None,size = (160,50),sqrscaling = False,border_radius = None,border_width=5):#text=None,fontsize=None,font="calibri",text_color=white
         # if type:
         #     self.type = "text"
         #     #self.text_surf = create_textsurf(text,fontsize,font,text_color,bg_color)
@@ -108,6 +109,7 @@ class Button:
         self.scale=1
         self.border_width = border_width
         self.active = True
+        self.sqrscaling = sqrscaling
         if img:
             self.img = pygame.transform.smoothscale(pygame.image.load(img).convert_alpha(),size)
             self.og_img = self.img
@@ -128,10 +130,14 @@ class Button:
         self.hover = self.rect.collidepoint(pygame.mouse.get_pos()) and not(pygame.mouse.get_pressed()[0])
         if self.active:
             if self.hover and not(self.uh):
-                self.size = (self.osize[0]*1.2,self.osize[1]*1.05)
+                if not self.sqrscaling:
+                    self.size = (self.osize[0]*1.2,self.osize[1]*1.05)
+                else:
+                    self.size = (self.osize[0]*1.1,self.osize[1]*1.1)
                 self.nrect = pygame.Rect(self.location[0]-self.size[0]/2,self.location[1]-self.size[1]/2,self.size[0],self.size[1])
                 if self.img:
-                    self.img = pygame.transform.smoothscale_by(self.og_img,1.2)
+                    self.img = pygame.transform.smoothscale(self.og_img,(self.size))
+                        
                 self.scale=1.05
 
             if self.uh and not(self.hover):
@@ -142,6 +148,7 @@ class Button:
                 self.scale=1
         else:
             self.nrect = self.rect
+            self.img = self.og_img
         if self.img:
             screen.blit(self.img,self.nrect)
         else:
@@ -161,24 +168,26 @@ class Button:
     #         self.action()
 
 class MenuBar:
-    def __init__(self,bg_color = (59,59,59), size = (800,160)):
+    def __init__(self,bg_color = (59,59,59), size = (844,204)):
         POS = self.pos = (SW/2,SH-100)
         self.size = size
         self.color = bg_color
         self.buttons=[
-                Button((POS[0]-size[0]//2+150, POS[1]),color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
-                Button((SW/2, POS[1]),color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
-                Button((POS[0]+size[0]//2-150, POS[1]),color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10)
+                Button((POS[0]-size[0]//2+160, POS[1]),img = "options_button.png",size=(220,140),border_radius=10),
+                Button((SW/2, POS[1]),img="quitbutton.png",size=(220,140),border_radius=10),
+                Button((POS[0]+size[0]//2-160, POS[1]),img="playbutton.png",size=(220,140),border_radius=10)
             ]
-        self.buttons[0].assigntext("OPTIONS",50,None,(0,255,0))
-        self.buttons[1].assigntext("QUIT",50,None,(255,0,0))
-        self.buttons[2].assigntext("PLAY",50,None,(0,0,255))
+        self.buttons[0].assigntext("OPTIONS",50,None,(87,236,115))
+        self.buttons[1].assigntext("QUIT",50,None,(241,95,95))
+        self.buttons[2].assigntext("PLAY",50,None,(61,149,236))
         self.rect = pygame.Rect(0,0,size[0],size[1])
         self.rect.center = POS
         self.active = True
+        self.img = pygame.image.load("menurect1.png").convert_alpha()
 
     def render(self):
-        pygame.draw.rect(screen,self.color,self.rect,0,20)
+        # pygame.draw.rect(screen,self.color,self.rect,0,20)
+        screen.blit(self.img,self.rect)
         for b in self.buttons:
             b.render()
 
@@ -188,26 +197,27 @@ class SelectionBar:
         POS=self.POS= (SW/2,SH/2)
         if settings:
             self.buttons=[
-                Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+150),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+250),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+370),color=(8, 69, 4),border_width=0,size=(300,50))
+                Button((SW/2, POS[1]-200+50),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+150),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+250),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+370),img = "backbutton.png",size=(340,90))
             ]
             self.buttons[0].assigntext("SOUND",30,None)
             self.buttons[1].assigntext("AVATAR",30,None)
             self.buttons[2].assigntext("ANALYTICS",30,None)
             self.buttons[3].assigntext("BACK",30,None,red)
-            self.size = (550,400)
+            self.size = (550*968//800,450*968//800)
 
         else:
             self.buttons = [
                 #Button(True,(SW/2, SH/2 - 30),)
-                Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+130),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+210),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+290),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+370),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+470),color=(8, 69, 4),border_width=0,size=(300,50))
+                #Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+50),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+130),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+210),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+290),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+370),img = "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-200+470),img = "backbutton.png",size=(340,90))
             ]
             self.buttons[0].assigntext("TicTacToe",30,None)
             self.buttons[1].assigntext("Othello",30,None)
@@ -215,13 +225,15 @@ class SelectionBar:
             self.buttons[3].assigntext("Chain Reaction",30,None)
             self.buttons[4].assigntext("Checkers",30,None)
             self.buttons[5].assigntext("BACK",30,None,red)
-            self.size = (550,600)
+            self.size = (550*968//800,650*968//800)
         self.rect = pygame.Rect(0,0,self.size[0],self.size[1])
         self.rect.center = self.POS
+        self.img = pygame.image.load("roundrect.png").convert_alpha()
+        self.img = pygame.transform.smoothscale(self.img,(self.size))
     def render(self):
         #render self
         #dark grey rounded rect with neon green border, maybe glow?
-        pygame.draw.rect(screen,(59,59,59),self.rect,0,20)
+        screen.blit(self.img, self.rect)
         for b in self.buttons:
             b.render()
 
@@ -238,20 +250,6 @@ class SoundTrack:
         pygame.mixer.music.set_volume(self.volume/100)
 
 
-quit_rect = pygame.Rect(SW/2-40, SH-50 , 80, 40)
-
-font = pygame.font.SysFont(None, 30)
-font1 = pygame.font.SysFont("calibri", 50,bold=True)
-buttonfont = pygame.font.SysFont( None ,20)
-
-textsurf = buttonfont.render("QUIT", True, white)
-textrect = textsurf.get_rect()
-textrect.center = (SW/2, SH-30)
-
-gamesurf = font1.render("GameHub", True, white)
-gamerect = gamesurf.get_rect()
-gamerect.center = (SW/2 , 100)
-
 buttons = [
     #Button(True,(SW/2, SH/2 - 30),)
     # Button((SW/2, 200)), #somebutton
@@ -259,7 +257,7 @@ buttons = [
     # Button((SW/2,200+100*2)),
     # Button((SW/2,200+100*3)),
     # Button((SW/2,200+100*4)),
-    Button((SW-50,50),img = "back.png",size = (30,30))
+    Button((SW-50,50),img = "back.png",sqrscaling=True,size = (30,30))
 ]
 # buttons[0].assigntext("TicTacToe",30,None)
 # buttons[1].assigntext("Othello",30,None)
@@ -272,7 +270,10 @@ gamebuttons= [
     #settings
 ]
 
-soundtracks = [SoundTrack("elektronomia.ogg","Elektronomia"),SoundTrack("cyberpunk.ogg","Ireallywant")]
+soundtracks = [SoundTrack("../Sound/elektronomia.ogg","Elektronomia"),
+               SoundTrack("el.ogg","Elektronomia1"),
+               SoundTrack("../Sound/cyberpunk.ogg","Ireallywant"),
+               SoundTrack("cp.ogg","Cyberpunk 2077")]
 
 player = []
 player.append(Text(avatar_data[0][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
@@ -298,6 +299,15 @@ opacity = pygame.Surface((SW,SH))
 opacity.fill((84,84,84))
 opacity.set_alpha(171)
 menubar = MenuBar()
+
+avatar_rect = pygame.Rect(0,0,550*968//800,600*968//800)
+avatar_rect.center = (SW / 2, SH / 2 + 50)
+avatar_img  = pygame.transform.smoothscale(pygame.image.load("roundrect.png"),avatar_rect.size)
+
+sound_rect = pygame.Rect(0,0,550*968//800,600*968//800)
+sound_rect.center = (SW / 2, SH / 2 + 50)
+sound_img = pygame.transform.smoothscale(pygame.image.load("roundrect.png"),sound_rect.size)
+
 
 while True:
     for event in pygame.event.get():
@@ -426,27 +436,31 @@ while True:
                         sound = True
                         sound_select = True
                         soundtracks[sound_iter].load()
-                        sound_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
+                        sound_quit = Button((SW/2,SH/2+280),img = "backbutton.png",size=(340,90))
                         sound_quit.assigntext("DONE",30,None,red)
                         sound_buttons = []
                         for i in range(4):
-                            sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
+                            #sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
                             if i % 2 == 0:
-                                sound_buttons[-1].assigntext("<",30,None)
+                                #sound_buttons[-1].assigntext("<",30,None)
+                                sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),img="leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
                             else:
-                                sound_buttons[-1].assigntext(">",30,None)
+                                #sound_buttons[-1].assigntext(">",30,None)
+                                sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),img="rightbutton.png",border_width=0,size=(65,69),sqrscaling=True))
 
                     elif menu.buttons[1].rect.collidepoint(event.pos):
                         avatar = True
-                        avatar_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
+                        avatar_quit = Button((SW/2,SH/2+280),img = "backbutton.png",size=(340,90))
                         avatar_quit.assigntext("DONE",30,None,red)
                         avatar_buttons = []
                         for i in range(10):
-                            avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
+                            # avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
                             if i % 2 == 0:
-                                avatar_buttons[-1].assigntext("<",30,None)
+                                #avatar_buttons[-1].assigntext("<",30,None)
+                                avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),img="leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
                             else:
-                                avatar_buttons[-1].assigntext(">",30,None)
+                                #avatar_buttons[-1].assigntext(">",30,None)
+                                avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),img="rightbutton.png",border_width=0,size=(65,69),sqrscaling = True))
 
                     elif menu.buttons[2].rect.collidepoint(event.pos):
                         analytics = True
@@ -461,6 +475,30 @@ while True:
                                 analytics_buttons[-1].assigntext("<",30,None)
                             else:
                                 analytics_buttons[-1].assigntext(">",30,None)
+                        # pass#analytics
+                        #DO NOT PRESS
+                        '''
+                        with open("history.csv","r",newline='') as file:
+                            game_stats = {"tictactoe":0,"othello":0,"connect4":0,"chain_rxn":0,"checkers":0}
+                            player_wins = {}
+                            csvreader = csv.reader(file)
+                            for row in csvreader:
+                                game_stats[row[1]]+=1
+                                if row[0] == "win":
+                                    if row[2] in player_wins.keys():
+                                        player_wins[row[2]] +=1
+                                    else:
+                                        player_wins[row[2]] = 1
+                                    if not(row[3] in player_wins.keys()):
+                                        player_wins[row[3]] = 0
+                            plt.subplot(121)
+                            plt.bar(list(player_wins.values()),list(player_wins.keys()))
+                            plt.title("Wins")
+                            plt.subplot(122)
+                            plt.pie(list(game_stats.values()),labels = list(game_stats.keys()))
+                            plt.title("gamesplayed")
+                            plt.show()'''
+
                     elif menu.buttons[3].rect.collidepoint(event.pos):
                         menu = False
                         for b in menubar.buttons:
@@ -499,9 +537,8 @@ while True:
         screen.blit(opacity,(0,0))
         #include settings rendering func here
         if avatar == True:
-            avatar_rect = pygame.Rect(0,0,550,600)
-            avatar_rect.center = (SW / 2, SH / 2 + 50)
-            pygame.draw.rect(screen,(59,59,59),avatar_rect,0,20)
+            #pygame.draw.rect(screen,(59,59,59),avatar_rect,0,20)
+            screen.blit(avatar_img,avatar_rect)
             avatar_quit.render()
             for b in avatar_buttons:
                 b.render()
@@ -522,18 +559,39 @@ while True:
             analytics_par[analytics_iter].render()
 
         elif sound:
-            sound_rect = pygame.Rect(0,0,550,600)
-            sound_rect.center = (SW / 2, SH / 2 + 50)
-            pygame.draw.rect(screen,(59,59,59),sound_rect,0,20)
+            #pygame.draw.rect(screen,(59,59,59),sound_rect,0,20)
+            screen.blit(sound_img,sound_rect)
             sound_quit.render()
             for b in sound_buttons:
                 b.render()
             soundtracks[sound_iter].text.render()
-            Text(str(soundtracks[sound_iter].volume),45,(SW / 2 - 100, SH / 2 - 160)).render()
-
+            Text(str(soundtracks[sound_iter].volume),45,(SW / 2, SH / 2 - 90)).render()
         else:
             menu.render()
-            
+
     clock.tick(60)
     pygame.display.flip()
-        
+
+# win/draw,game_name,winner/firstplayer,otherplayer,date(not rn)
+########### matplotlib shit
+'''
+with f as open("history.csv","r",newline=''):
+    game_stats = {"tictactoe":0,"othello":0,"connect4":0,"chain_rxn":0,"checkers":0}
+    player_wins = {}
+    csvreader = csv.reader(f)
+    for row in csvreader:
+        game_stats[row[1]]+=1
+        if row[0] == "win":
+            if row[2] in player_wins.keys():
+                player_wins[row[2]] +=1
+            else:
+                player_wins[row[2]] = 1
+            if not(row[3] in player_wins.keys()):
+                player_wins[row[3]] = 0
+    plt.subplot(121)
+    plt.bar(list(player_wins.values()),list(player_wins.keys()))
+    plt.title("Wins")
+    plt.subplot(122)
+    plt.pie(list(game_stats.values()),labels = list(game_stats.keys()))
+    plt.title("gamesplayed")
+    plt.show()'''
