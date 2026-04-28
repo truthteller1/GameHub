@@ -247,8 +247,9 @@ class Checkers(Game):
                             if self.make_move((i,j)):
                                 self.switch_turn()
                                 if self.check_win_condition():
-                                    return True
+                                    return self.check_win_condition()
     def check_win_condition(self):
         arr = np.argwhere(abs(self.gameboard)==self.rep[self.turn])
         if arr.shape[0]==0 or (not (self.has_moves(arr[:,0],arr[:,1])).any()):
-            return True
+            self.winner = 3 - self.rep[self.turn]
+            return 3 - self.rep[self.turn]

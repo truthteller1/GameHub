@@ -1,7 +1,6 @@
 import pygame
 import os
-from games.button import Button
-from games.text import Text
+from .button import *
 
 
 
@@ -25,9 +24,9 @@ class Analytics:
 
     def interact(self,event):
         if self.analytics_buttons[0].rect.collidepoint(event.pos):
-            self.analytics_iter = (self.analytics_iter - 1) % 4
+            self.analytics_iter = (self.analytics_iter - 1) % 5
         elif self.analytics_buttons[1].rect.collidepoint(event.pos):
-            self.analytics_iter = (self.analytics_iter + 1) % 4
+            self.analytics_iter = (self.analytics_iter + 1) % 5
         elif self.analytics_show.rect.collidepoint(event.pos):
             os.system(f"bash leaderboard.sh {self.analytics_iter + 1}")
         elif self.analytics_quit.rect.collidepoint(event.pos):

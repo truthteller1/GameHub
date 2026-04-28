@@ -52,7 +52,7 @@ class TicTacToe(Game):
                 if (self.boardrects[i][j]).collidepoint(click.pos) and self.gameboard[i][j]==0:
                     self.make_move((i,j))
                     if self.check_win_condition((i,j)) != 0:
-                        return True
+                        return self.check_win_condition((i,j))
                     self.switch_turn()
 
     def check_win_condition(self, move):
@@ -72,10 +72,13 @@ class TicTacToe(Game):
         win2_ldiag= ((ldiag[:-4] == ldiag[1:-3]) * (ldiag[:-4] == ldiag[2:-2]) * (ldiag[:-4] == ldiag[3:-1]) * (ldiag[:-4] == ldiag[4:]) * (ldiag[:-4] == 2)).any()
 
         if win1_vert or win1_hor or win1_rdiag or win1_ldiag:
+            self.winner = 1
             return 1
         elif win2_vert or win2_hor or win2_rdiag or win2_ldiag:
+            self.winner = 2
             return 2
         elif not (self.gameboard == 0).any():
+            self.winner = -1
             return -1
         else:
             return 0

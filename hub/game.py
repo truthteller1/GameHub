@@ -7,9 +7,9 @@ from games.othello import Othello
 from games.chain_rxn import Chain_rxn
 from games.checkers import Checkers
 from games.avatar_render import *
-from games.analytics import Analytics
-from games.button import Button
-from games.text import Text
+from utilities.analytics import Analytics
+from utilities.button import *
+from utilities.avatar_menu import *
 import csv
 import random
 import os
@@ -36,13 +36,15 @@ screen = pygame.display.set_mode((SW,SH))
 
 screen.fill(white)
 
-avatar_data = []
+avatar_data = [[],[]]
 with open("users.tsv","r") as file:
     for line in file:
         line = line.strip()
         arr = line.split("\t")
-        if arr[0] == player1 or arr[0] == player2:
-            avatar_data.append([arr[0],int(arr[2]),int(arr[3]),int(arr[4]),int(arr[5])])
+        if arr[0] == player1:
+            avatar_data[0] = [arr[0],int(arr[2]),int(arr[3]),int(arr[4]),int(arr[5])]
+        elif arr[0] == player2:
+            avatar_data[1] = [arr[0],int(arr[2]),int(arr[3]),int(arr[4]),int(arr[5])]
 
 title = pygame.image.load("../Graphics/Title.png").convert_alpha()
 title = pygame.transform.scale(title,(900,250))
@@ -78,100 +80,15 @@ for pos in range(SW // 20):
     par[-1][0].set_alpha(random.randint(200,255))
 
 
-class Text:
-    def __init__(self,text,size,pos,font="calibri",color=white):
-        self.text_font = pygame.font.SysFont(font,size)
-        self.text_surf = self.text_font.render(text,True,color)
-        self.rect = self.text_surf.get_rect(center = pos)
-        self.pos = pos
-    def render(self,scale=1):
-        if scale != 1:
-            t=pygame.transform.smoothscale_by((self.text_surf),scale)
-            trect = t.get_rect(center=self.pos)
-            screen.blit(t,trect)
-        else:
-            screen.blit(self.text_surf,self.rect)
-
-class Button:
-    def __init__(self,location,color=orange,border_color=white,img=None,size = (160,50),border_radius = None,border_width=5):#text=None,fontsize=None,font="calibri",text_color=white
-        # if type:
-        #     self.type = "text"
-        #     #self.text_surf = create_textsurf(text,fontsize,font,text_color,bg_color)
-        #     self.text_rect = self.text_surf.get_rect(center = self.location)
-        #     self.rect = pygame.Rect(location[0]-size[0]/2,location[1]-size[1]/2,size[0],size[1])
-            
-        # else:
-        #     self.type = "img"
-        #     self.img = pygame.image.load(img).convert_alpha()
-        #     self.rect = self.img.get_rect(center=self.location)
-        self.location = location
-        self.size = size
-        self.uh = False
-        self.assigned = False
-        self.scale=1
-        self.border_width = border_width
-        self.active = True
-        if img:
-            self.img = pygame.transform.smoothscale(pygame.image.load(img).convert_alpha(),size)
-            self.og_img = self.img
-            self.rect = self.img.get_rect(center=location)
-        else:
-            self.img = None
-            self.color = color
-            self.border_color = border_color
-            self.rect = pygame.Rect(location[0]-size[0]/2,location[1]-size[1]/2,size[0],size[1])
-            if not border_radius:
-                self.border_radius = size[1]//2
-            else:
-                self.border_radius = border_radius
-        self.nrect=self.rect
-        self.osize = self.size
-
-    def render(self):
-        self.hover = self.rect.collidepoint(pygame.mouse.get_pos()) and not(pygame.mouse.get_pressed()[0])
-        if self.active:
-            if self.hover and not(self.uh):
-                self.size = (self.osize[0]*1.2,self.osize[1]*1.05)
-                self.nrect = pygame.Rect(self.location[0]-self.size[0]/2,self.location[1]-self.size[1]/2,self.size[0],self.size[1])
-                if self.img:
-                    self.img = pygame.transform.smoothscale_by(self.og_img,1.2)
-                self.scale=1.05
-
-            if self.uh and not(self.hover):
-                self.size = self.osize
-                self.nrect = self.rect
-                if self.img:
-                    self.img = self.og_img
-                self.scale=1
-        else:
-            self.nrect = self.rect
-        if self.img:
-            screen.blit(self.img,self.nrect)
-        else:
-            pygame.draw.rect(screen,self.color,self.nrect,self.border_width,self.border_radius)
-
-        if self.assigned:
-            self.text.render(self.scale)
-
-        self.uh = self.hover
-
-    def assigntext(self,text,fontsize,font="calibri",text_color=white):
-        self.assigned = True
-        self.text = Text(text,fontsize,self.location,font,text_color)
-        
-    # def onclick(self,pos):
-    #     if pygame.mouse.get_pressed()[0] and self.rect.collidepoint(pygame.mouse.get_pos()):
-    #         self.action()
-
 class MenuBar:
     def __init__(self,bg_color = (59,59,59), size = (800,160)):
         POS = self.pos = (SW/2,SH-100)
         self.size = size
         self.color = bg_color
         self.buttons=[
-                Button((POS[0]-size[0]//2+150, POS[1]),color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
-                Button((SW/2, POS[1]),color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
-                Button((POS[0]+size[0]//2-150, POS[1]),color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10)
+                Button((POS[0]-size[0]//2+150, POS[1]),screen,color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
+                Button((SW/2, POS[1]),screen,color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10),
+                Button((POS[0]+size[0]//2-150, POS[1]),screen,color=(8, 69, 4),border_width=0,size=(200,100),border_radius=10)
             ]
         self.buttons[0].assigntext("OPTIONS",50,None,(0,255,0))
         self.buttons[1].assigntext("QUIT",50,None,(255,0,0))
@@ -191,10 +108,10 @@ class SelectionBar:
         POS=self.POS= (SW/2,SH/2)
         if settings:
             self.buttons=[
-                Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+150),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+250),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+370),color=(8, 69, 4),border_width=0,size=(300,50))
+                Button((SW/2, POS[1]-200+50),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+150),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+250),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+370),screen,color=(8, 69, 4),border_width=0,size=(300,50))
             ]
             self.buttons[0].assigntext("SOUND",30,None)
             self.buttons[1].assigntext("AVATAR",30,None)
@@ -205,12 +122,12 @@ class SelectionBar:
         else:
             self.buttons = [
                 #Button(True,(SW/2, SH/2 - 30),)
-                Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+130),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+210),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+290),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+370),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-200+470),color=(8, 69, 4),border_width=0,size=(300,50))
+                Button((SW/2, POS[1]-200+50),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+130),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+210),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+290),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+370),screen,color=(8, 69, 4),border_width=0,size=(400,50)),
+                Button((SW/2, POS[1]-200+470),screen,color=(8, 69, 4),border_width=0,size=(300,50))
             ]
             self.buttons[0].assigntext("TicTacToe",30,None)
             self.buttons[1].assigntext("Othello",30,None)
@@ -233,7 +150,7 @@ class SoundTrack:
         self.name = songname
         self.filename = filename
         self.volume = 100
-        self.text = Text(songname,45,(SW /2, SH / 2 - 180),None,(8,200,4))
+        self.text = Text(songname,45,(SW /2, SH / 2 - 180),screen,None,(8,200,4))
     def load(self):
         pygame.mixer.music.load(self.filename)
         pygame.mixer.music.play(loops=-1)
@@ -241,34 +158,10 @@ class SoundTrack:
         pygame.mixer.music.set_volume(self.volume/100)
 
 
-quit_rect = pygame.Rect(SW/2-40, SH-50 , 80, 40)
-
-font = pygame.font.SysFont(None, 30)
-font1 = pygame.font.SysFont("calibri", 50,bold=True)
-buttonfont = pygame.font.SysFont( None ,20)
-
-textsurf = buttonfont.render("QUIT", True, white)
-textrect = textsurf.get_rect()
-textrect.center = (SW/2, SH-30)
-
-gamesurf = font1.render("GameHub", True, white)
-gamerect = gamesurf.get_rect()
-gamerect.center = (SW/2 , 100)
 
 buttons = [
-    #Button(True,(SW/2, SH/2 - 30),)
-    # Button((SW/2, 200)), #somebutton
-    # Button((SW/2,200+100)),
-    # Button((SW/2,200+100*2)),
-    # Button((SW/2,200+100*3)),
-    # Button((SW/2,200+100*4)),
-    Button((SW-50,50),img = "back.png",size = (30,30))
+    Button((SW-50,50),screen,img = "back.png",size = (30,30))
 ]
-# buttons[0].assigntext("TicTacToe",30,None)
-# buttons[1].assigntext("Othello",30,None)
-# buttons[2].assigntext("Connect4",30,None)
-# buttons[3].assigntext("Chain Reaction",30,None)
-# buttons[4].assigntext("Checkers",30,None)
 
 gamebuttons= [
     buttons[-1]
@@ -278,21 +171,21 @@ gamebuttons= [
 soundtracks = [SoundTrack("elektronomia.ogg","Elektronomia"),SoundTrack("cyberpunk.ogg","Ireallywant")]
 
 player = []
-player.append(Text(avatar_data[0][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
-player.append(Text(avatar_data[1][0],45,(SW /2, SH / 2 - 180),None,(8,200,4)))
+player.append([Text(avatar_data[0][0],45,(SW /2, SH / 2 - 180),screen,None,(8,200,4)),parse_avatar(avatar_data[0][0])])
+player.append([Text(avatar_data[1][0],45,(SW /2, SH / 2 - 180),screen,None,(8,200,4)),parse_avatar(avatar_data[1][0])])
 
 analytics_par = []
-analytics_par.append(Text("Wins",45,(SW/2,SH/2-80),None,(8,200,4)))
-analytics_par.append(Text("Losses",45,(SW/2,SH/2-80),None,(8,200,4)))
-analytics_par.append(Text("Win/Loss Ratio",45,(SW/2,SH/2-80),None,(8,200,4)))
-analytics_par.append(Text("Total games",45,(SW/2,SH/2-80),None,(8,200,4)))
+analytics_par.append(Text("Wins",45,(SW/2,SH/2-80),screen,None,(8,200,4)))
+analytics_par.append(Text("Losses",45,(SW/2,SH/2-80),screen,None,(8,200,4)))
+analytics_par.append(Text("Win/Loss Ratio",45,(SW/2,SH/2-80),screen,None,(8,200,4)))
+analytics_par.append(Text("Total games",45,(SW/2,SH/2-80),screen,None,(8,200,4)))
+analytics_par.append(Text("Draws",45,(SW/2,SH/2-80),screen,None,(8,200,4)))
 
 menu, avatar, sound, analytics=False, False, False, False
 game, winframe = None, None
-analytics_iter = 0
 
-av1 = parse_avatar(player1) 
-av2 = parse_avatar(player2)
+av1 = player[0][1] 
+av2 = player[1][1]
 
 avatar_iter = sound_iter = 0
 songs = len(soundtracks)
@@ -317,16 +210,6 @@ while True:
                         game = False
 
                 if not game and not menu:
-                    # if buttons[0].rect.collidepoint(event.pos):
-                    #     game = TicTacToe("me","ching","me",(10,10),screen)
-                    # elif buttons[1].rect.collidepoint(event.pos):
-                    #     game = Othello("me","ching","me",(8,8),screen)
-                    # elif buttons[4].rect.collidepoint(event.pos):
-                    #     game = Checkers("me","ching","me",(8,8),screen)
-                    # elif buttons[3].rect.collidepoint(event.pos):
-                    #     game = Chain_rxn("me","Ching","me",(6,6,2),screen)
-                    # elif buttons[2].rect.collidepoint(event.pos):
-                    #     game = Connect4("me","ching","me",(7,7),screen)
                     if menubar.buttons[0].rect.collidepoint(event.pos):
                         menu = SelectionBar(True)
                         for b in menubar.buttons:
@@ -344,30 +227,37 @@ while True:
                     
                 elif game and not menu:
                     if winframe is None and game.checkpress(event):
-                        game.winner = game.turn
-                        with open("history.csv","a",newline="") as file:
-                            writer = csv.writer(file,quoting=csv.QUOTE_NONE,dialect="unix")
-                            game_name = str(type(game))
-                            game_name = game_name[game_name.find(".")+1:]
-                            game_name = game_name[:game_name.find(".")]
-                            writer.writerow([game_name,game.winner,game.p2])
+                        if game.winner != -1:
+                            with open("history.csv","a",newline="") as file:
+                                writer = csv.writer(file,quoting=csv.QUOTE_NONE,dialect="unix")
+                                game_name = str(type(game))
+                                game_name = game_name[game_name.find(".")+1:]
+                                game_name = game_name[:game_name.find(".")]
+                                writer.writerow(["Win",game_name,game.rep[game.winner],game.rep[3 - game.winner]])
+                        else:
+                            with open("history.csv","a",newline="") as file:
+                                writer = csv.writer(file,quoting=csv.QUOTE_NONE,dialect="unix")
+                                game_name = str(type(game))
+                                game_name = game_name[game_name.find(".")+1:]
+                                game_name = game_name[:game_name.find(".")]
+                                writer.writerow(["Draw",game_name,game.rep[1],game.rep[2]])
                 
                 elif not game and menu and menu.settings == False:
                     if menu.buttons[0].rect.collidepoint(event.pos):
+                        menu = False
                         game = TicTacToe(player1,player2,player1,(10,10),screen)
-                        menu=False
                     elif menu.buttons[1].rect.collidepoint(event.pos):
+                        menu = False
                         game = Othello(player1,player2,player1,(8,8),screen)
-                        menu=False
                     elif menu.buttons[4].rect.collidepoint(event.pos):
+                        menu = False
                         game = Checkers(player1,player2,player1,(8,8),screen)
-                        menu=False
                     elif menu.buttons[3].rect.collidepoint(event.pos):
+                        menu = False
                         game = Chain_rxn(player1,player2,player1,(6,6,2),screen)
-                        menu=False
                     elif menu.buttons[2].rect.collidepoint(event.pos):
+                        menu = False
                         game = Connect4(player1,player2,player1,(7,7),screen)
-                        menu=False
                     elif menu.buttons[5].rect.collidepoint(event.pos):
                         menu = False
                         for b in menubar.buttons:
@@ -377,35 +267,17 @@ while True:
                 elif not game and menu and menu.settings == True:
                     if analytics:
                         if leaderboard.interact(event):
+                            if winframe:
+                                winframe = None
+                                menu = SelectionBar(False)
                             analytics = False
 
                     elif avatar:
-                        if avatar_buttons[0].rect.collidepoint(event.pos):
-                            avatar_iter = (avatar_iter - 1) % 2
-                        elif avatar_buttons[1].rect.collidepoint(event.pos):
-                            avatar_iter = (avatar_iter + 1) % 2
-                        elif avatar_buttons[2].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][1] = (avatar_data[avatar_iter][1] - 1) % 5
-                        elif avatar_buttons[3].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][1] = (avatar_data[avatar_iter][1] + 1) % 5
-                        elif avatar_buttons[4].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][2] = (avatar_data[avatar_iter][2] - 1) % 5
-                        elif avatar_buttons[5].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][2] = (avatar_data[avatar_iter][2] + 1) % 5
-                        elif avatar_buttons[6].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][3] = (avatar_data[avatar_iter][3] - 1) % 5
-                        elif avatar_buttons[7].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][3] = (avatar_data[avatar_iter][3] + 1) % 5
-                        elif avatar_buttons[8].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][4] = (avatar_data[avatar_iter][4] - 1) % 5
-                        elif avatar_buttons[9].rect.collidepoint(event.pos):
-                            avatar_data[avatar_iter][4] = (avatar_data[avatar_iter][4] + 1) % 5
-                        elif avatar_quit.rect.collidepoint(event.pos):
-                            os.system(f"sed -i 's/{avatar_data[0][0]}\\t\\(.*\\)\\t.\\t.\\t.\\t./{avatar_data[0][0]}\\t\\1\\t{avatar_data[0][1]}\\t{avatar_data[0][2]}\\t{avatar_data[0][3]}\\t{avatar_data[0][4]}/' users.tsv")
-                            os.system(f"sed -i 's/{avatar_data[1][0]}\\t\\(.*\\)\\t.\\t.\\t.\\t./{avatar_data[1][0]}\\t\\1\\t{avatar_data[1][1]}\\t{avatar_data[1][2]}\\t{avatar_data[1][3]}\\t{avatar_data[1][4]}/' users.tsv")
+                        if AvatarMenu.interact(event,avatar_data):
                             avatar = False
                             av1 = parse_avatar(player1) 
                             av2 = parse_avatar(player2)#REPLACE THIS SHIT
+                            
                     
                     elif sound:
                         if sound_buttons[0].rect.collidepoint(event.pos):
@@ -429,11 +301,11 @@ while True:
                         sound = True
                         sound_select = True
                         soundtracks[sound_iter].load()
-                        sound_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
+                        sound_quit = Button((SW/2,SH/2+280),screen,color=(8, 69, 4),border_width=0,size=(350,50))
                         sound_quit.assigntext("DONE",30,None,red)
                         sound_buttons = []
                         for i in range(4):
-                            sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
+                            sound_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,color=(8, 69, 4),border_width=0,size=(40,90)))
                             if i % 2 == 0:
                                 sound_buttons[-1].assigntext("<",30,None)
                             else:
@@ -441,15 +313,7 @@ while True:
 
                     elif menu.buttons[1].rect.collidepoint(event.pos):
                         avatar = True
-                        avatar_quit = Button((SW/2,SH/2+280),color=(8, 69, 4),border_width=0,size=(350,50))
-                        avatar_quit.assigntext("DONE",30,None,red)
-                        avatar_buttons = []
-                        for i in range(10):
-                            avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),color=(8, 69, 4),border_width=0,size=(40,90)))
-                            if i % 2 == 0:
-                                avatar_buttons[-1].assigntext("<",30,None)
-                            else:
-                                avatar_buttons[-1].assigntext(">",30,None)
+                        AvatarMenu = Avatar(SW,SH,screen)
 
                     elif menu.buttons[2].rect.collidepoint(event.pos):
                         analytics = True
@@ -490,7 +354,11 @@ while True:
                     win_rect = pygame.Rect(0,0,550,600)
                     win_rect.center = (SW/2,SH/2)
                     pygame.draw.rect(screen,(59,59,59),win_rect,0,20)
-                    avatar_render(av1,(SW/2,SH/2-90),screen)
+                    if game.winner != -1:
+                        avatar_render(player[game.winner - 1][1],(SW/2,SH/2-90),screen)
+                    else:
+                        avatar_render(player[0][1],(SW/2 - 75,SH/2-90),screen,scale=0.5)
+                        avatar_render(player[1][1],(SW/2+75,SH/2-90),screen,scale=0.5)
                 else:
                     menu = SelectionBar(True)
                     for b in menubar.buttons:
@@ -498,7 +366,7 @@ while True:
                     analytics = True
                     leaderboard = Analytics(SW,SH,screen)
                     game = False
-                    winframe = None
+                    winframe = True
 
     if menu:
         screen.blit(opacity,(0,0))
@@ -507,14 +375,14 @@ while True:
             avatar_rect = pygame.Rect(0,0,550,600)
             avatar_rect.center = (SW / 2, SH / 2 + 50)
             pygame.draw.rect(screen,(59,59,59),avatar_rect,0,20)
-            avatar_quit.render()
-            for b in avatar_buttons:
+            AvatarMenu.avatar_quit.render()
+            for b in AvatarMenu.avatar_buttons:
                 b.render()
-            player[avatar_iter].render()
-            screen.blit(skins[avatar_data[avatar_iter][4]],(SW / 2 - 150, SH / 2 - 90))
-            screen.blit(hats[avatar_data[avatar_iter][1]],(SW / 2 - 130, SH / 2 - 175))
-            screen.blit(eyes[avatar_data[avatar_iter][2]],(SW / 2 - 100, SH / 2 - 20))
-            screen.blit(mouths[avatar_data[avatar_iter][3]],(SW / 2 - 75, SH / 2 + 60))
+            player[AvatarMenu.avatar_iter][0].render()
+            screen.blit(skins[avatar_data[AvatarMenu.avatar_iter][4]],(SW / 2 - 150, SH / 2 - 90))
+            screen.blit(hats[avatar_data[AvatarMenu.avatar_iter][1]],(SW / 2 - 130, SH / 2 - 175))
+            screen.blit(eyes[avatar_data[AvatarMenu.avatar_iter][2]],(SW / 2 - 100, SH / 2 - 20))
+            screen.blit(mouths[avatar_data[AvatarMenu.avatar_iter][3]],(SW / 2 - 75, SH / 2 + 60))
 
         elif analytics == True:
             analytics_rect = pygame.Rect(0,0,550,600)

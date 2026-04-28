@@ -42,9 +42,10 @@ class Othello(Game):
                     #REPLACE WITH O
                     pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2)
                 
-        for k in moves:
-            i,j=k
-            pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2,width = 2)
+        if moves.size != 0:
+            for k in moves:
+                i,j=k
+                pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2,width = 2)
         
         self.renderav((130,300),self.p1)
         pygame.draw.circle(self.screen,(255,255,255),(130,250),20)
@@ -118,8 +119,11 @@ class Othello(Game):
         self.gameboard[move[0],move[1]] = self.rep[self.turn]
 
     def possible_moves(self):
-        
-        return np.argwhere(self.gameboard==0)[self.has_moves(np.argwhere(self.gameboard==0)[:,0],np.argwhere(self.gameboard==0)[:,1],self.rep[self.turn])]
+        if np.argwhere(self.gameboard == 0).size != 0:
+            return np.argwhere(self.gameboard==0)[self.has_moves(np.argwhere(self.gameboard==0)[:,0],np.argwhere(self.gameboard==0)[:,1],self.rep[self.turn])]
+        else:
+            return np.array([])
+
 
     def checkpress(self,click):
         for i in range(self.gameboard.shape[0]):
@@ -127,26 +131,32 @@ class Othello(Game):
 
                 if (self.boardrects[i][j]).collidepoint(click.pos) and self.gameboard[i][j]==0 and self.valid_move(i,j,self.rep[self.turn]):
                     self.make_move((i,j))
-                    if self.check_win_condition((i,j)) != 0:
-                        return True
+                    if self.check_win_condition((i,j)):
+                        return self.check_win_condition((i,j))
                     self.switch_turn()
                     if not self.has_moves(np.argwhere(self.gameboard == 0).T[[0]],np.argwhere(self.gameboard == 0).T[[1]],self.rep[self.turn]).any():
                         self.switch_turn()
     def check_win_condition(self,move):
         if np.argwhere(self.gameboard == 0).size == 0:
             if np.argwhere(self.gameboard == 1).size == np.argwhere(self.gameboard == 2).size:
+                self.winner = -1
                 return -1
             elif np.argwhere(self.gameboard == 1).size > np.argwhere(self.gameboard == 2).size:
+                self.winner = 1
                 return 1
             else:
+                self.winner = 2
                 return 2
         else:
             if not self.has_moves(np.argwhere(self.gameboard == 0).T[[0]],np.argwhere(self.gameboard == 0).T[[1]],1).any() and not self.has_moves(np.argwhere(self.gameboard == 0).T[[0]],np.argwhere(self.gameboard == 0).T[[1]],2).any():
                 if np.argwhere(self.gameboard == 1).size == np.argwhere(self.gameboard == 2).size:
+                    self.winner = -1
                     return -1
                 elif np.argwhere(self.gameboard == 1).size > np.argwhere(self.gameboard == 2).size:
+                    self.winner = 1
                     return 1
                 else :
+                    self.winner = 2
                     return 2
             else:
                 return 0

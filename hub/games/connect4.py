@@ -56,8 +56,8 @@ class Connect4(Game):
             for j in range(self.gameboard.shape[1]):
                 if (self.boardrects[i][j]).collidepoint(click.pos) and np.argwhere(self.gameboard[:,j] == 0).size != 0:
                     self.make_move((i,j))
-                    if self.check_win_condition((np.argwhere(self.gameboard[:,j] != 0)[0,0],j)) != 0:
-                        return True
+                    if self.check_win_condition((np.argwhere(self.gameboard[:,j] != 0)[0,0],j)): 
+                        return self.check_win_condition((np.argwhere(self.gameboard[:,j] != 0)[0,0],j))
                     self.switch_turn()
 
     def check_win_condition(self, move):
@@ -77,12 +77,13 @@ class Connect4(Game):
         win2_ldiag= ((ldiag[:-3] == ldiag[1:-2]) * (ldiag[:-3] == ldiag[2:-1]) * (ldiag[:-3] == ldiag[3:]) * (ldiag[:-3] == 2)).any()
 
         if win1_vert or win1_hor or win1_rdiag or win1_ldiag:
+            self.winner = 1
             return 1
         elif win2_vert or win2_hor or win2_rdiag or win2_ldiag:
+            self.winner = 2
             return 2
         elif not (self.gameboard == 0).any():
+            self.winner = -1
             return -1
         else:
-            print(hor)
-            print(rdiag)
             return 0

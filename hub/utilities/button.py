@@ -1,5 +1,20 @@
 import pygame
-from games.text import Text
+
+
+class Text:
+    def __init__(self,text,size,pos,screen,font="calibri",color=(255,255,255)):
+        self.screen = screen
+        self.text_font = pygame.font.SysFont(font,size)
+        self.text_surf = self.text_font.render(text,True,color)
+        self.rect = self.text_surf.get_rect(center = pos)
+        self.pos = pos
+    def render(self,scale=1):
+        if scale != 1:
+            t=pygame.transform.smoothscale_by((self.text_surf),scale)
+            trect = t.get_rect(center=self.pos)
+            self.screen.blit(t,trect)
+        else:
+            self.screen.blit(self.text_surf,self.rect)
 
 class Button:                                                                                                            
     def __init__(self,location,screen,color=(100,100,0),border_color=(255,255,255),img=None,size = (160,50),border_radius = None,border_width=5):#text=None,fontsize=None,font="calibri",text_color=white
@@ -68,3 +83,4 @@ class Button:
     def assigntext(self,text,fontsize,font="calibri",text_color=(255,255,255)):
         self.assigned = True
         self.text = Text(text,fontsize,self.location,self.screen,font,text_color)
+
