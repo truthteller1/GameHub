@@ -63,12 +63,12 @@ class Connect4(Game):
         Text("Your turn!",60,(500 + ((-1)**(self.rep[self.turn]))*375,180),self.screen,color=(189,255,209)).render()
         self.screen.blit(self.avim,self.avrect1)
         self.screen.blit(self.avim,self.avrect2)
-        self.text1.render(scale = 1+ 0.1*(self.rep[self.turn]%2))
-        self.text2.render(scale = 1+ 0.1*(self.rep[self.turn]//2))
-        self.renderav((145,300),self.p1)
-        pygame.draw.circle(self.screen,(190,0,0),(145,250),15)
-        self.renderav((1000-145,300),self.p2)
-        pygame.draw.circle(self.screen,(0,0,190),(1000-145,250),15)
+        self.text1.render(scale = 1.2+ 0.1*(self.rep[self.turn]%2))
+        self.text2.render(scale = 1.2+ 0.1*(self.rep[self.turn]//2))
+        self.renderav((125,300),self.p1)
+        pygame.draw.circle(self.screen,(190,0,0),(125,250),15)
+        self.renderav((1000-125,300),self.p2)
+        pygame.draw.circle(self.screen,(0,0,190),(1000-125,250),15)
 
     # does not play at point of mouseclick rather plays at lowest unoccupied square in the column
     def make_move(self,move):
