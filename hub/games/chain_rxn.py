@@ -3,6 +3,7 @@ from pathlib import Path
 from .avatar_render import *
 import pygame
 import numpy as np
+from .text import Text
 
 class Chain_rxn(Game):
     def __init__(self, p1, p2, starter, board, screen):
@@ -19,6 +20,8 @@ class Chain_rxn(Game):
         self.bx = (self.size[0] - self.gameboard.shape[0] * self.side - (self.gameboard.shape[0] - 1) * self.buffer) // 2
         self.by = (self.size[1] - self.gameboard.shape[1] * self.side - (self.gameboard.shape[1] - 1) * self.buffer) // 2
         self.atoms = [[],[]]
+
+
         for i in range(2):
             for j in range(3):
                 img_path = img_dir / f"atom{i+1},{j+1}.png"
@@ -28,14 +31,6 @@ class Chain_rxn(Game):
             self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 self.boardrects[i].append(pygame.Rect((self.bx + j*(self.buffer+self.side),self.by+i*(self.buffer+self.side),self.side,self.side)))
-
-    def renderav(self, pos, player):
-        if self.turn != player:
-            transparency = 180
-        else:
-            transparency = 255
-        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)
-
 
     def renderboard(self, dimensions):
         buffer  = 10
@@ -47,7 +42,7 @@ class Chain_rxn(Game):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 #self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
-                pygame.draw.rect(self.screen, (0,255,0), self.boardrects[i][j])
+                pygame.draw.rect(self.screen, (0,150,0), self.boardrects[i][j])
                 if self.gameboard[i][j][0] != 0:
                     self.screen.blit(self.atoms[self.gameboard[i,j,0] - 1][self.gameboard[i,j,1] - 1],(bx + j*(buffer+side),by+i*(buffer+side)))
         self.renderav((125,350),self.p1)

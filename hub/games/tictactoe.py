@@ -1,6 +1,7 @@
 from .game_class import Game
 from .avatar_render import *
 import pygame
+from .text import Text
 
 class TicTacToe(Game):
     def __init__(self, p1, p2, starter, board, screen):
@@ -12,24 +13,30 @@ class TicTacToe(Game):
         by = 150
         buffer  = 6
         side = 44
+
+        self.background = pygame.transform.smoothscale(pygame.image.load("../Graphics/sharprect.png"),((50*self.gameboard.shape[0]+5)*968//800,(50*self.gameboard.shape[1]+5)*968//800))
+        self.bgrect = self.background.get_rect()
+        self.bgrect.center = (bx+50*5-3,by+50*5-3)
+        self.avim = pygame.transform.smoothscale(pygame.image.load("../Graphics/roundrect.png"),(180*968//800,320*968//800))
+        self.avrect1 = pygame.Rect(0,0,180*968//800,320*968//800)
+        self.avrect1.midtop = (130,180)
+        self.avrect2 = pygame.Rect(0,0,180*968//800,320*968//800)
+        self.avrect2.midtop = (1000-130,180)
+        self.text1 = Text(self.p1,20,(130,500),screen,color=(189,255,209))
+        self.text2 = Text(self.p2,20,(1000-130,500),screen,color=(189,255,209))
+
         for i in range(self.gameboard.shape[0]):
             self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
                 self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
         self.avatars = {self.p1:parse_avatar(p1),self.p2: parse_avatar(p2)}
 
-    def renderav(self, pos, player):
-        if self.turn != player:
-            transparency = 180
-        else:
-            transparency = 255
-        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)
-
     def renderboard(self, dimensions):
         bx = 500-250
         by = 150
         buffer  = 6
         side = 44
+        self.screen.blit(self.background,self.bgrect)
         for i in range(self.gameboard.shape[0]):
             #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
@@ -41,6 +48,11 @@ class TicTacToe(Game):
                 elif self.gameboard[i][j] == 2:
                     #REPLACE WITH O
                     pygame.draw.circle(self.screen,(0,0,190),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2)
+        
+        self.screen.blit(self.avim,self.avrect1)
+        self.screen.blit(self.avim,self.avrect2)
+        self.text1.render(scale = 1+ 0.1*(self.rep[self.turn]%2))
+        self.text2.render(scale = 1+ 0.1*(self.rep[self.turn]//2))
         self.renderav((125,300),self.p1)
         pygame.draw.circle(self.screen,(190,0,0),(125,250),15)
         self.renderav((1000-125,300),self.p2)

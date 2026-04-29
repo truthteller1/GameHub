@@ -2,6 +2,7 @@ from .game_class import Game
 from .avatar_render import *
 import pygame
 import numpy as np
+from .text import Text
 
 class Othello(Game):
     def __init__(self, p1, p2, starter, board, screen):
@@ -12,19 +13,23 @@ class Othello(Game):
         #restructure vars
         bx = 500-240
         by = 160
-        buffer  = 5
-        side = 55
+        buffer  = 4
+        side = 56
         self.gameboard[3,3] = 1
         self.gameboard[4,4] = 1
         self.gameboard[3,4] = 2
         self.gameboard[4,3] = 2
         self.avatars = {self.p1:parse_avatar(p1),self.p2: parse_avatar(p2)}
-        self.background = pygame.transform.smoothscale(pygame.image.load("sharprect.png"),((60*self.gameboard.shape[0]+5)*968//800,(60*self.gameboard.shape[1]+5)*968//800))
+        self.background = pygame.transform.smoothscale(pygame.image.load("../Graphics/sharprect.png"),((60*self.gameboard.shape[0]+5)*968//800,(60*self.gameboard.shape[1]+5)*968//800))
         self.bgrect = self.background.get_rect()
         self.bgrect.center = (bx+60*4-2,by+60*4-2)
-        self.avim = pygame.transform.smoothscale(pygame.image.load("roundrect.png"),(180*968//800,320*968//800))
+        self.avim = pygame.transform.smoothscale(pygame.image.load("../Graphics/roundrect.png"),(180*968//800,320*968//800))
         self.avrect1 = pygame.Rect(0,0,180*968//800,320*968//800)
         self.avrect1.midtop = (130,180)
+        self.avrect2 = pygame.Rect(0,0,180*968//800,320*968//800)
+        self.avrect2.midtop = (1000-130,180)
+        self.text1 = Text(self.p1,20,(130,500),screen,color=(189,255,209))
+        self.text2 = Text(self.p2,20,(1000-130,500),screen,color=(189,255,209))
         for i in range(self.gameboard.shape[0]):
             self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
@@ -33,8 +38,8 @@ class Othello(Game):
     def renderboard(self, dimensions):
         bx = 500-240
         by = 160
-        buffer  = 5
-        side = 55
+        buffer  = 4
+        side = 56
         moves = self.possible_moves()
         self.screen.blit(self.background,self.bgrect)
         for i in range(self.gameboard.shape[0]):
@@ -55,17 +60,13 @@ class Othello(Game):
                 pygame.draw.circle(self.screen,(0,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2,width = 2)
         
         self.screen.blit(self.avim,self.avrect1)
+        self.screen.blit(self.avim,self.avrect2)
+        self.text1.render(scale = 1+ 0.1*(self.rep[self.turn]%2))
+        self.text2.render(scale = 1+ 0.1*(self.rep[self.turn]//2))
         self.renderav((130,300),self.p1)
         pygame.draw.circle(self.screen,(255,255,255),(130,250),20)
         self.renderav((1000-130,300),self.p2)
         pygame.draw.circle(self.screen,(0,0,0),(1000-130,250),20)
-
-    def renderav(self, pos, player):
-        if self.turn != player:
-            transparency = 180
-        else:
-            transparency = 255
-        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)
 
     def check_list(self,arr, pos, player):
         if np.argwhere(arr[:pos] == player).size != 0:
