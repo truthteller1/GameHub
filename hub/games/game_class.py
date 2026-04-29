@@ -1,4 +1,5 @@
 import numpy as np
+from .avatar_render import *
 
 class Game:
     def __init__(self, p1, p2, starter, board):
@@ -20,5 +21,10 @@ class Game:
         
     def check_win_condition(self):
         pass
-    def move_to(self):
-        pass
+
+    def renderav(self, pos, player):
+        if self.turn != player:
+            transparency = 180
+        else:
+            transparency = 255
+        avatar_render(self.avatars[player],pos,self.screen,transparency,0.4)

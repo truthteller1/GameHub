@@ -2,9 +2,9 @@ import pygame
 
 
 class Text:
-    def __init__(self,text,size,pos,screen,font="calibri",color=(255,255,255)):
+    def __init__(self,text,size,pos,screen,font="calibri",color=(189,255,209)):
         self.screen = screen
-        self.text_font = pygame.font.SysFont(font,size)
+        self.text_font = pygame.font.Font("SpaceMono-Regular.ttf",size)
         self.text_surf = self.text_font.render(text,True,color)
         self.rect = self.text_surf.get_rect(center = pos)
         self.pos = pos
@@ -86,6 +86,6 @@ class Button:
 
         self.uh = self.hover
 
-    def assigntext(self,text,fontsize,font="calibri",text_color=(255,255,255)):
+    def assigntext(self,text,fontsize,font="calibri",text_color=(189,255,209)):
         self.assigned = True
         self.text = Text(text,fontsize,self.location,self.screen,font,text_color)

@@ -1,7 +1,7 @@
 import pygame
 
 class Text:
-    def __init__(self,text,size,pos,screen,font="calibri",color=(255,255,255)):
+    def __init__(self,text,size,pos,screen,font="../SpaceMono-Regular.ttf",color=(255,255,255)):
         self.screen = screen
         self.text_font = pygame.font.SysFont(font,size)
         self.text_surf = self.text_font.render(text,True,color)
