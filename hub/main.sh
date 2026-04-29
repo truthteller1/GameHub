@@ -33,6 +33,9 @@ validUsr() {
         elif [[ $(echo "$1" | wc -m) -le 4 ]]; then
                 echo $'\033[0;31mUsername should contain atleast 4 characters\033[0m' >&2
                 echo true
+	elif [[ $(echo "$1" | wc -m) -ge 9 ]]; then
+                echo $'\033[0;31mUsername should not contain more than 7 characters\033[0m' >&2
+                echo true
         else
                 echo false
         fi
