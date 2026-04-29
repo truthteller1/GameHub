@@ -3,6 +3,9 @@ from .avatar_render import *
 import pygame
 import numpy as np
 from .text import Text
+from pathlib import Path
+
+button = Path(__file__).parent.parent.parent / "Graphics" / "theme_designs"
 
 class Checkers(Game):
     def __init__(self, p1, p2, starter, board, screen):
@@ -23,10 +26,10 @@ class Checkers(Game):
         by = 160
         buffer  = 0
         side = 60
-        self.background = pygame.transform.smoothscale(pygame.image.load("../Graphics/sharprect.png"),((60*self.gameboard.shape[0]+8)*968//800,(60*self.gameboard.shape[1]+8)*968//800))
+        self.background = pygame.transform.smoothscale(pygame.image.load(button / "sharprect.png"),((60*self.gameboard.shape[0]+8)*968//800,(60*self.gameboard.shape[1]+8)*968//800))
         self.bgrect = self.background.get_rect()
         self.bgrect.center = (bx+60*4,by+60*4)
-        self.avim = pygame.transform.smoothscale(pygame.image.load("../Graphics/roundrect.png"),(180*968//800,320*968//800))
+        self.avim = pygame.transform.smoothscale(pygame.image.load(button / "roundrect.png"),(180*968//800,320*968//800))
         self.avrect1 = pygame.Rect(0,0,180*968//800,320*968//800)
         self.avrect1.midtop = (130,180)
         self.avrect2 = pygame.Rect(0,0,180*968//800,320*968//800)
@@ -68,6 +71,8 @@ class Checkers(Game):
                         pygame.draw.circle(self.screen,(0,0,255),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-5)
                 if self.gameboard[i][j]<0:
                     pygame.draw.circle(self.screen, (255,165,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),5)
+        
+        Text("Your turn!",60,(500 + ((-1)**(self.rep[self.turn]))*375,180),self.screen,color=(189,255,209)).render()
         self.screen.blit(self.avim,self.avrect1)
         self.screen.blit(self.avim,self.avrect2)
         self.text1.render(scale = 1+ 0.1*(self.rep[self.turn]%2))
@@ -179,7 +184,6 @@ class Checkers(Game):
     def make_move(self, move):
         if (move[1]+move[0])%2==0:
             return False
-        print(self.gameboard)
         rdiag = self.gameboard.diagonal(self.selected[1]-self.selected[0])
         rind = min(self.selected[0],self.selected[1])
         ldiag = self.gameboard[:,::-1].diagonal(self.gameboard.shape[1]-1-self.selected[1]-self.selected[0])
@@ -187,7 +191,6 @@ class Checkers(Game):
 
         #making moves for normal(non-jump) moves
         if self.turn == self.p1:
-            print(move==(self.selected[0]+1,self.selected[1]+1),self.gameboard[move]==0)
             if (move==(self.selected[0]+1,self.selected[1]-1) or move==(self.selected[0]+1,self.selected[1]+1)) and self.gameboard[move]==0:
                 if move[0] == self.gameboard.shape[0]-1 or self.gameboard[self.selected]==-1:
                     self.gameboard[self.selected]=0
@@ -203,7 +206,6 @@ class Checkers(Game):
                     return True
             
         else:
-            print(move==(self.selected[0]+1,self.selected[1]+1),self.gameboard[move]==0)
             if (move==(self.selected[0]-1,self.selected[1]-1) or move==(self.selected[0]-1,self.selected[1]+1)) and self.gameboard[move]==0:
                 if move[0] == 0 or self.gameboard[self.selected]==-2:
                     self.gameboard[self.selected]=0
@@ -261,7 +263,6 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]-2,pos[1]+2))
             return True
-        print(lind>=2, abs(ldiag[lind-1])==other, ldiag[lind-2]==0)
         
     
     #processes clicks on the board, makes moves accordingly if corresponding click is valid
@@ -269,7 +270,6 @@ class Checkers(Game):
         for i in range(self.gameboard.shape[0]):
             for j in range(self.gameboard.shape[1]):
                 if (self.boardrects[i][j]).collidepoint(click.pos):
-                    print((i,j), self.selected, self.check_existence(i,j),self.rep[self.turn]==abs(self.gameboard[i][j]))
                     if self.selected!=(i,j):
                         if self.check_existence(i,j) and self.rep[self.turn]==abs(self.gameboard[i][j]):
                             self.selected = (i,j)

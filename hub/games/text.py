@@ -1,9 +1,12 @@
 import pygame
+from pathlib import Path
+
+gamehub = Path(__file__).parent.parent.parent
 
 class Text:
-    def __init__(self,text,size,pos,screen,font="../SpaceMono-Regular.ttf",color=(255,255,255)):
+    def __init__(self,text,size,pos,screen,font=gamehub / "SpaceMono-Regular.ttf",color=(255,255,255)):
         self.screen = screen
-        self.text_font = pygame.font.SysFont(font,size)
+        self.text_font = pygame.font.SysFont(str(font),size)
         self.text_surf = self.text_font.render(text,True,color)
         self.rect = self.text_surf.get_rect(center = pos)
         self.pos = pos

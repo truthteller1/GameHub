@@ -1,6 +1,9 @@
 import pygame
 from utilities.button import *
+from pathlib import Path
 
+hub = Path(__file__).parent.parent
+graphics = hub.parent / "Graphics"
 
 #POS IS MIDTOP OF THE WHOLE AVATAR!!!!
 def avatar_render(img_list,pos,screen,transparency=255,scale=1,player=None): #img_list: 0-skin 1-hat 2-eyes 3-mouth
@@ -21,7 +24,7 @@ def avatar_render(img_list,pos,screen,transparency=255,scale=1,player=None): #im
 
 def parse_avatar(player):
     img_list = [None]*4
-    with open("users.tsv","r") as file:
+    with open(hub / "users.tsv","r") as file:
         for line in file:
             line = line.strip()
             arr = line.split("\t")
@@ -30,9 +33,9 @@ def parse_avatar(player):
                 break #HATS EYES MOUTH SKIN
         else:
             return None
-    img_list[0]=pygame.transform.smoothscale(pygame.image.load(f"../Graphics/Skins/Skin{avatar_data[3]+1}.png").convert_alpha(),(300,315))
-    img_list[2]=pygame.transform.smoothscale(pygame.image.load(f"../Graphics/Eyes/Eye{avatar_data[1]+1}.png").convert_alpha(),(200,60))
-    img_list[3]=pygame.transform.smoothscale(pygame.image.load(f"../Graphics/Mouths/Mouth{avatar_data[2]+1}.png").convert_alpha(),(150,60))
-    img_list[1]=pygame.transform.smoothscale(pygame.image.load(f"../Graphics/Hats/Hat{avatar_data[0]+1}.png").convert_alpha(),(200,80))
+    img_list[0]=pygame.transform.smoothscale(pygame.image.load(graphics / "Skins" / f"Skin{avatar_data[3]+1}.png").convert_alpha(),(300,315))
+    img_list[2]=pygame.transform.smoothscale(pygame.image.load(graphics / "Eyes" / f"Eye{avatar_data[1]+1}.png").convert_alpha(),(200,60))
+    img_list[3]=pygame.transform.smoothscale(pygame.image.load(graphics / "Mouths" / f"Mouth{avatar_data[2]+1}.png").convert_alpha(),(150,60))
+    img_list[1]=pygame.transform.smoothscale(pygame.image.load(graphics / "Hats" / f"Hat{avatar_data[0]+1}.png").convert_alpha(),(200,80))
     return img_list
 

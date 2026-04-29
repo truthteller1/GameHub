@@ -1,20 +1,23 @@
 import pygame
 import os
 from .button import *
+from pathlib import Path
+
+button = Path(__file__).parent.parent.parent / "Graphics" / "theme_designs"
 
 class Avatar:
     def __init__(self,SW,SH,screen):
         self.avatar_iter = 0
-        self.avatar_quit = Button((SW/2,SH/2+290),screen,img = "../Graphics/backbutton.png",size=(340,90))
+        self.avatar_quit = Button((SW/2,SH/2+290),screen,img = button / "backbutton.png",size=(340,90))
         self.avatar_quit.assigntext("DONE",30,None,(241,95,95))
         self.avatar_buttons = []
-        self.avatar_buttons.append(Button((SW/2-((-1)**0)*200,SH/2-190),screen,img="../Graphics/leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
-        self.avatar_buttons.append(Button((SW/2-((-1)**1)*200,SH/2-190),screen,img="../Graphics/rightbutton.png",border_width=0,size=(65,69),sqrscaling=True))
+        self.avatar_buttons.append(Button((SW/2-((-1)**0)*200,SH/2-190),screen,img=button / "leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
+        self.avatar_buttons.append(Button((SW/2-((-1)**1)*200,SH/2-190),screen,img=button / "rightbutton.png",border_width=0,size=(65,69),sqrscaling=True))
         for i in range(2,10):
             if i % 2 == 0:
-                self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img="../Graphics/leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
+                self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img=button / "leftbutton.png",border_width=0,size=(65,69),sqrscaling=True))
             else:
-                self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img="../Graphics/rightbutton.png",border_width=0,size=(65,69),sqrscaling = True))
+                self.avatar_buttons.append(Button((SW/2-((-1)**i)*200,SH/2-180+90*(i//2)),screen,img=button / "rightbutton.png",border_width=0,size=(65,69),sqrscaling = True))
 
     def interact(self,event,avatar_data):
         if self.avatar_buttons[0].rect.collidepoint(event.pos):

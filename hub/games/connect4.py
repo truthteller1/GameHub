@@ -3,6 +3,9 @@ from .avatar_render import *
 import pygame
 import numpy as np
 from .text import Text
+from pathlib import Path
+
+button = Path(__file__).parent.parent.parent / "Graphics" / "theme_designs"
 
 class Connect4(Game):
     def __init__(self, p1, p2, starter, board, screen):
@@ -18,10 +21,10 @@ class Connect4(Game):
         side = 54
 
         # seting values for variables required for rendering avatars
-        self.background = pygame.transform.smoothscale(pygame.image.load("../Graphics/sharprect.png"),((60*self.gameboard.shape[0]+5)*968//800,(60*self.gameboard.shape[1]+5)*968//800))
+        self.background = pygame.transform.smoothscale(pygame.image.load(button / "sharprect.png"),((60*self.gameboard.shape[0]+5)*968//800,(60*self.gameboard.shape[1]+5)*968//800))
         self.bgrect = self.background.get_rect()
         self.bgrect.center = (bx+60*3.5-3,by+60*3.5-3)
-        self.avim = pygame.transform.smoothscale(pygame.image.load("../Graphics/roundrect.png"),(180*968//800,320*968//800))
+        self.avim = pygame.transform.smoothscale(pygame.image.load(button / "roundrect.png"),(180*968//800,320*968//800))
         self.avrect1 = pygame.Rect(0,0,180*968//800,320*968//800)
         self.avrect1.midtop = (130,180)
         self.avrect2 = pygame.Rect(0,0,180*968//800,320*968//800)
@@ -57,6 +60,7 @@ class Connect4(Game):
                     pygame.draw.circle(self.screen,(0,0,190),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-2)
         
         # rendering avatars of both players
+        Text("Your turn!",60,(500 + ((-1)**(self.rep[self.turn]))*375,180),self.screen,color=(189,255,209)).render()
         self.screen.blit(self.avim,self.avrect1)
         self.screen.blit(self.avim,self.avrect2)
         self.text1.render(scale = 1+ 0.1*(self.rep[self.turn]%2))
