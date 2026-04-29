@@ -16,6 +16,7 @@ import csv
 import random
 import os
 from pathlib import Path
+from datetime import date
 
 # initializing import paths as path objects
 hub = Path(__file__).parent
@@ -249,20 +250,21 @@ while True:
                     
                 elif game and not menu:
                     if winframe is None and game.checkpress(event):
+                        today = date.today()
                         if game.winner != -1:
                             with open(hub / "history.csv","a",newline="") as file:
                                 writer = csv.writer(file,quoting=csv.QUOTE_NONE,dialect="unix")
                                 game_name = str(type(game))
                                 game_name = game_name[game_name.find(".")+1:]
                                 game_name = game_name[:game_name.find(".")]
-                                writer.writerow(["Win",game_name,game.rep[game.winner],game.rep[3 - game.winner]])
+                                writer.writerow(["Win",game_name,game.rep[game.winner],game.rep[3 - game.winner],today])
                         else:
                             with open(hub / "history.csv","a",newline="") as file:
                                 writer = csv.writer(file,quoting=csv.QUOTE_NONE,dialect="unix")
                                 game_name = str(type(game))
                                 game_name = game_name[game_name.find(".")+1:]
                                 game_name = game_name[:game_name.find(".")]
-                                writer.writerow(["Draw",game_name,game.rep[1],game.rep[2]])
+                                writer.writerow(["Draw",game_name,game.rep[1],game.rep[2],today])
                 
                 elif not game and menu and menu.settings == False:
                     if menu.buttons[0].rect.collidepoint(event.pos):
