@@ -20,8 +20,7 @@ class Checkers(Game):
                     self.gameboard[i][j] = 1
                 if i>=(self.gameboard.shape[0]-1-2) and (i+j)%2!=0:
                     self.gameboard[i][j] = 2
-        
-        #restructure vars
+    
         bx = 500-240
         by = 160
         buffer  = 0
@@ -52,19 +51,15 @@ class Checkers(Game):
         side = 60
         self.screen.blit(self.background,self.bgrect)
         for i in range(self.gameboard.shape[0]):
-            #self.boardrects.append([])
             for j in range(self.gameboard.shape[1]):
-                #self.boardrects[i].append(pygame.Rect((bx + j*(buffer+side),by+i*(buffer+side),side,side)))
                 if (i+j)%2==0:    
                     pygame.draw.rect(self.screen, (0,150,0), self.boardrects[i][j])
                 if abs(self.gameboard[i][j]) == 1:
-                    #REPLACE THIS WITH X
                     if self.selected == (i,j):
                         pygame.draw.circle(self.screen,(100,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side/2),side//2-5)
                     else:
                         pygame.draw.circle(self.screen,(255,0,0),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side/2),side//2-5)
                 elif abs(self.gameboard[i][j]) == 2:
-                    #REPLACE WITH O
                     if self.selected == (i,j):
                         pygame.draw.circle(self.screen,(0,0,100),(bx + j*(buffer+side)+side//2,by+i*(buffer+side)+side//2),side//2-5)
                     else:
@@ -135,7 +130,7 @@ class Checkers(Game):
         coin = self.rep[self.turn]
         other = self.rep[self.turn]%2 +1
 
-        #checking one direction
+        #checking along right diagonal
         if (len(rdiag)>=rind+3 and abs(rdiag[rind+1])==other and rdiag[rind+2]==0) and (self.turn == self.p1 or self.gameboard[pos]<0):
             self.gameboard[pos[0]+1][pos[1]+1]=0
             if pos[0]+2 == self.gameboard.shape[0]-1 or self.gameboard[pos]<0:
@@ -145,7 +140,7 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]+2,pos[1]+2))
 
-        #checking
+        #checking along left diagonal
         elif (len(ldiag)>=lind+3 and abs(ldiag[lind+1])==other and ldiag[lind+2]==0) and (self.turn == self.p1 or self.gameboard[pos]<0):
             
             self.gameboard[pos[0]+1][pos[1]-1]=0
@@ -156,7 +151,7 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]+2,pos[1]-2))
 
-        #checking
+        #checking along right diagonal
         elif (rind>=2 and abs(rdiag[rind-1])==other and rdiag[rind-2]==0) and (self.turn == self.p2 or self.gameboard[pos]<0):
             self.gameboard[pos[0]-1][pos[1]-1]=0
             if pos[0]-2 == 0 or self.gameboard[pos]<0:
@@ -166,7 +161,7 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]-2,pos[1]-2))
 
-        #checking
+        #checking along left diagonal
         elif (lind>=2 and abs(ldiag[lind-1])==other and ldiag[lind-2]==0) and (self.turn == self.p2 or self.gameboard[pos]<0):
             self.gameboard[pos[0]-1][pos[1]+1]=0
             if pos[0]-2 == 0 or self.gameboard[pos]<0:
@@ -204,7 +199,7 @@ class Checkers(Game):
                     self.gameboard[self.selected]=0
                     self.gameboard[move] = -1
                     return True
-            
+        #normal moves for player2
         else:
             if (move==(self.selected[0]-1,self.selected[1]-1) or move==(self.selected[0]-1,self.selected[1]+1)) and self.gameboard[move]==0:
                 if move[0] == 0 or self.gameboard[self.selected]==-2:
@@ -222,7 +217,7 @@ class Checkers(Game):
                 
         coin = self.rep[self.turn]
         other = self.rep[self.turn]%2 +1
-        pos = self.selected #SOMEONE CHANGE THIS PLEASE ToT
+        pos = self.selected 
         #making moves for jumps
         if (len(rdiag)>=rind+3 and abs(rdiag[rind+1])==other and rdiag[rind+2]==0) and (self.turn == self.p1 or self.gameboard[pos]<0) and move==(pos[0]+2,pos[1]+2):
             self.gameboard[pos[0]+1][pos[1]+1]=0
@@ -233,7 +228,7 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]+2,pos[1]+2))
             return True
-
+        #checking along left diagonal
         elif (len(ldiag)>=lind+3 and abs(ldiag[lind+1])==other and ldiag[lind+2]==0) and (self.turn == self.p1 or self.gameboard[pos]<0)and move==(pos[0]+2,pos[1]-2):
             self.gameboard[pos[0]+1][pos[1]-1]=0
             if pos[0]+2 == self.gameboard.shape[0]-1 or self.gameboard[pos]<0:
@@ -243,7 +238,7 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]+2,pos[1]-2))
             return True
-
+        #checking along right diagonal
         elif (rind>=2 and abs(rdiag[rind-1])==other and rdiag[rind-2]==0) and (self.turn == self.p2 or self.gameboard[pos]<0)and move==(pos[0]-2,pos[1]-2):
             self.gameboard[pos[0]-1][pos[1]-1]=0
             if pos[0]-2 == 0 or self.gameboard[pos]<0:
@@ -253,7 +248,7 @@ class Checkers(Game):
             self.gameboard[pos] = 0
             self.jump((pos[0]-2,pos[1]-2))
             return True
-
+        #checking along left diagonal
         elif (lind>=2 and abs(ldiag[lind-1])==other and ldiag[lind-2]==0) and (self.turn == self.p2 or self.gameboard[pos]<0)and move==(pos[0]-2,pos[1]+2):
             self.gameboard[pos[0]-1][pos[1]+1]=0
             if pos[0]-2 == 0 or self.gameboard[pos]<0:
@@ -274,13 +269,10 @@ class Checkers(Game):
                         if self.check_existence(i,j) and self.rep[self.turn]==abs(self.gameboard[i][j]):
                             self.selected = (i,j)
                     if self.selected:
-                        # if self.selected == (i,j):
-                        #     self.selected = None
-                        # else:
-                            if self.make_move((i,j)):
-                                self.switch_turn()
-                                if self.check_win_condition():
-                                    return self.check_win_condition()
+                        if self.make_move((i,j)):
+                            self.switch_turn()
+                            if self.check_win_condition():
+                                return self.check_win_condition()
                                 
     #checks win condition using numpy, returns 1 or 2 corresponding to the game winner
     def check_win_condition(self):
