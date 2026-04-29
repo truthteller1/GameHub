@@ -15,15 +15,6 @@ import csv
 import random
 import os
 
-###############TODO##############
-#Matplotlib proper implementation - chinmaya NOT DONE
-#Date in leaderboard.sh - arnav
-#Changing all fonts and font colors - chinmaya FONT LEFT 
-#Changing layout of game selection and music selection menu GAME SELECTION LEFT
-#Implementing design across all games DONE, small formatting
-#slider for volume if possible, TS AINT HAPPENING BROSKI
-#latex report + makefile
-#CODE REFACTORING WITH COMMENTS
 
 white = (255,255,255)
 black = (0,0,0)
