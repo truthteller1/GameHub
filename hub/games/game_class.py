@@ -10,15 +10,13 @@ class Game:
         self.winner = False
 
     def switch_turn(self):
-        self.turn = self.p1 if (self.turn == self.p2) else self.p2
-        print("turn changed to",self.turn)
+        self.turn = self.rep[ 3 - self.rep[self.turn]] #self.p1 if (self.turn == self.p2) else self.p2
 
     def make_move(self, move):
         if (self.turn == self.p1):
             self.gameboard[move] = 1
         else:
             self.gameboard[move]  = 2
-        print(self.gameboard)
         
     def check_win_condition(self):
         pass
