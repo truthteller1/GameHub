@@ -180,7 +180,7 @@ gamebuttons= [
 
 soundtracks = [
     SoundTrack(hub.parent / "Sound" / "elektronomia.ogg","Elektronomia",SW,SH,screen),
-    SoundTrack(hub.parent / "Sound" / "cyberpunk.ogg","Ireallywant",SW,SH,screen),
+    SoundTrack(hub.parent / "Sound" / "cyberpunk.ogg","Cyberpunk",SW,SH,screen),
     ]
 
 player = []
