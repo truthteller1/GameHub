@@ -1,7 +1,7 @@
 #!/bin/bash
 echo -e "\033[0;32m\t\t\t\t\tLEADERBOARD\033[0m"
 
-games=("tictactoe" "connect4" "othello" "chain_rxn" "checkers")
+games=("tictactoe" "connect4" "othello" "chain_rxn" "checkers" "connect4_mod")
 for game in "${games[@]}"
 do
 	touch tmp.txt

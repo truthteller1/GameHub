@@ -41,7 +41,7 @@ class Analytics:
         elif self.analytics_show.rect.collidepoint(event.pos):
             os.system(f"bash leaderboard.sh {self.analytics_iter + 1}")
             with open("history.csv","r",newline='') as file:
-                game_stats = {"tictactoe":0,"othello":0,"connect4":0,"chain_rxn":0,"checkers":0}
+                game_stats = {"tictactoe":0,"othello":0,"connect4":0,"chain_rxn":0,"checkers":0,"connect4_mod":0}
                 player_wins = {}
                 player_totalgames = {}
                 csvreader = csv.reader(file)
@@ -75,7 +75,7 @@ class Analytics:
 
                 # Pie chart of games played
                 if any(game_stats.values()):
-                    label = ["TicTacToe","Othello","Connect4","Chain Reaction","Checkers"]
+                    label = ["TicTacToe","Othello","Connect4","Chain Reaction","Checkers","Connect4_mod"]
                     ax2 = fig.add_subplot(gs[1, 0])
                     ax2.pie(list(game_stats.values()),labels = label)
                     ax2.set_title("Most played games")

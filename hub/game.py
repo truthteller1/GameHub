@@ -6,6 +6,7 @@ from games.connect4 import Connect4
 from games.othello import Othello
 from games.chain_rxn import Chain_rxn
 from games.checkers import Checkers
+from games.connect4_mod import Connect4_Mod
 from games.avatar_render import *
 from utilities.analytics import Analytics
 from utilities.button import *
@@ -141,19 +142,21 @@ class SelectionBar:
             self.buttons = [
                 #Button(True,(SW/2, SH/2 - 30),)
                 #Button((SW/2, POS[1]-200+50),color=(8, 69, 4),border_width=0,size=(400,50)),
-                Button((SW/2, POS[1]-240),screen,img = button / "regularbutton.png",size=(440,90)),
-                Button((SW/2, POS[1]-240+90),screen,img = button / "regularbutton.png",size=(440,90)),
-                Button((SW/2, POS[1]-240+180),screen,img = button / "regularbutton.png",size=(440,90)),
-                Button((SW/2, POS[1]-240+270),screen,img = button / "regularbutton.png",size=(440,90)),
-                Button((SW/2, POS[1]-240+360),screen,img = button / "regularbutton.png",size=(440,90)),
-                Button((SW/2, POS[1]-200+470),screen,img = button / "backbutton.png",size=(340,90))
+                Button((SW/2, POS[1]-280),screen,img = button / "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-280+90),screen,img = button / "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-280+180),screen,img = button / "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-280+270),screen,img = button / "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-280+360),screen,img = button / "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-280+450),screen,img = button / "regularbutton.png",size=(440,90)),
+                Button((SW/2, POS[1]-270+550),screen,img = button / "backbutton.png",size=(340,90))
             ]
             self.buttons[0].assigntext("TicTacToe",25,None)
             self.buttons[1].assigntext("Othello",25,None)
             self.buttons[2].assigntext("Connect4",25,None)
             self.buttons[3].assigntext("Chain Reaction",25,None)
             self.buttons[4].assigntext("Checkers",25,None)
-            self.buttons[5].assigntext("BACK",25,None,red)
+            self.buttons[5].assigntext("Connect4(Mod)",25,None)
+            self.buttons[6].assigntext("BACK",25,None,red)
             self.size = (550*968//800,650*968//800)
         self.rect = pygame.Rect(0,0,self.size[0],self.size[1])
         self.rect.center = self.POS
@@ -283,6 +286,9 @@ while True:
                         menu = False
                         game = Connect4(player1,player2,player1,(7,7),screen)
                     elif menu.buttons[5].rect.collidepoint(event.pos):
+                        menu = False
+                        game = Connect4_Mod(player1,player2,player1,(7,7),screen)
+                    elif menu.buttons[6].rect.collidepoint(event.pos):
                         menu = False
                         for b in menubar.buttons:
                             b.active = True
